@@ -2,13 +2,16 @@
 
 ## Classes pensadas
 - Core
-> Classe principal do código, responsável por determinar como as demais classes serão iniciadas e finalizadas
+> Classe principal do código, responsável por determinar como as demais classes serão iniciadas e finalizadas.
 
 - Moves
 > Classe responsável por validar, buscar e realizar jogadas.
 
+- StyleManager
+> Classe responsável por controlar e unir as demais classes de estilização.
+
 - LayoutFactory
-> Classe responsável pelo posicionamento dos componentes no panel principal.  Precisa estar conectada com ComponentsFactory
+> Classe responsável pelo posicionamento dos componentes no panel principal.  Precisa estar conectada com ComponentsFactory.
 
 - ComponentsFactory
 > Classe responsável por iniciar e configurar os componentes do panel principal.
