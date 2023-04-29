@@ -28,6 +28,7 @@ public class Core{
 	public JPanel getLayout(LayoutFactory layout){
 		/**
 		* @param Instância do layout do tabuleiro
+		* @return panel com design do tabuleiro
 		*/
 		JPanel panel = new JPanel();
 		GroupLayout container = GroupLayout(panel); 
