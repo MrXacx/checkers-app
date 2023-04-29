@@ -11,12 +11,13 @@ import javax.swing.GroupLayout.Group;
 import java.util.Arrays;
 import java.util.List;
 
+import app.checkers.styles.ComponentsFactory;
 
 public class LayoutFactory extends ComponentsFactory{
 	private final Group sequential_group = layout.createSequentialGroup();  // Objeto de grupo sequencial
 	private final Group  parallel_group_baseline = layout.createParallelGroup(GroupLayout.Alignment.BASELINE); // Objeto de grupo paralelo
 	private final Group  parallel_group_leading = layout.createParallelGroup(GroupLayout.Alignment.LEADING); // Objeto de grupo paralelo
-	private final int SIZE = 80; // Tamanho dos componentes alinhados 
+	private final int SIZE = 80; // Tamanho dos componentes alinhados genericamente
 	
 	public LayoutFactory(){
 		this.createCheckerboard(new JButton[8][8]); // Cria tabuleiro 8x8
@@ -38,20 +39,14 @@ public class LayoutFactory extends ComponentsFactory{
     	* @param layout do JPanel principal
     	*/
     	var parallelGroup = parallel_group_leading; // Obtém instância de um grupo paralelo
+    	var sequentialGroup = sequential_group;  // Obtém instância de um grupo sequencial
+    	
     	for(Component line : this.checkerboard){ // IItera array
     		parallelGroup = parallelGroup.addGroup(this.alignComponents(sequential_group, line));  // Alinha componentes da linha em relação aos componentes
-    	}   	
-    	layout.setHorizontalGroup(parallelGroup);  // Define alinhamento
-    }
-    
-    public void alignVerticalGroup(GroupLayout layout){
-    	/**
-    	* @param layout do JPanel principal
-    	*/
-    	var sequentialGroup = sequential_group;  // Obtém instância de um grupo sequencial
-    	for(Component line : this.checkerboard){ // IItera array
     		sequentialGroup = sequentialGroup.addGroup(this.alignComponents(parallel_group_baseline, line)); // Alinha componentes da linha em relação às outras linhas
-    	}   
-    	layout.setVerticalGroup(parallel_group_leading.addGroup(sequentialGroup)); // Define alinhamento
-	}	
+    	}   	
+    	
+    	layout.setHorizontalGroup(parallelGroup);  // Define alinhamento horizontal
+    	layout.setVerticalGroup(parallel_group_leading.addGroup(sequentialGroup)); // Define alinhamento vertical
+    }
 }
