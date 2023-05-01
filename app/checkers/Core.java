@@ -17,24 +17,29 @@ public class Core{
 	public static void main(String[] args){
 		frame = new JFrame("Damas"); // Cria frame
 		
-		frame.add(this.getLayout(new LayoutFactory())); // Adiciona tabuleiro ao frame
-		frame.setSize(480, 480); // Define dimensões
+		frame.add(getLayout(new LayoutFactory())); // Adiciona tabuleiro ao frame
+		frame.setSize(640, 680); // Define dimensões
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Determina que encerramento do frame equivale ao encerramento do código
 
        frame.setLocationRelativeTo(null); // Centraliza frame
        frame.setVisible(true); // Torna frame visível	
 	}
 	
-	public JPanel getLayout(LayoutFactory layout){
+	public static JPanel getLayout(LayoutFactory layout){
 		/**
 		* @param Instância do layout do tabuleiro
 		* @return panel com design do tabuleiro
 		*/
 		JPanel panel = new JPanel();
-		GroupLayout container = GroupLayout(panel); 
-		
-		layout.alignGroups(container); // Define layout do painel
+		GroupLayout container = new GroupLayout(panel); 
 		panel.setLayout(container); // Define o layout que o painel deve utilizar	
+		
+		layout.setLayout(container); // Define layout do painel
+		
+		layout.alignGroups(); // Define layout do painel
+		//layout.setVerticalGroup(); // Define layout do painel
+		
+		
 
 		return panel;
 	}
