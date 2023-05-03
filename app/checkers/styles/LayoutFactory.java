@@ -16,9 +16,6 @@ public class LayoutFactory extends ComponentsFactory{
 	
 	private final int SIZE = 80; // Tamanho dos componentes alinhados genericamente
 	
-	public LayoutFactory(){
-		this.checkerboard = this.createCheckerboard(); // Cria tabuleiro 8x8
-	}
 	public void setLayout(GroupLayout layout){
 		this.layout = layout;
 	}
