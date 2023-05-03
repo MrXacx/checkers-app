@@ -18,7 +18,7 @@ public class Core{
 	
 	public static void main(String[] args){
 		players[0] =  new Player("BLACK");
-		players[1] =  new Player("WITHE");
+		players[1] =  new Player("WHITE");
 
 
 		frame = new JFrame("Damas"); // Cria frame
