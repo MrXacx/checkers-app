@@ -3,6 +3,8 @@
 ## Classes pensadas
 - Core
 > Classe principal do código, responsável por determinar como as demais classes serão iniciadas e finalizadas.
+- Player
+> Classe que representa um jogador. Deve ter um ícone de peça e um total de peças.
 
 - Moves
 > Classe responsável por validar, buscar e realizar jogadas.
