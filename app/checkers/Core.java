@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 
+import java.awt.Color;
 import app.checkers.components.Player;
 import app.checkers.styles.LayoutFactory;
 
@@ -17,9 +18,8 @@ public class Core{
 	private static Player[] players = new Player[2];
 	
 	public static void main(String[] args){
-		players[0] =  new Player("BLACK");
-		players[1] =  new Player("WHITE");
-
+		players[0] =  new Player("BLACK"); // Inicia jogador das preças pretas
+		players[1] =  new Player("WHITE"); // Inicia jogador das peças brancas
 
 		frame = new JFrame("Damas"); // Cria frame
 		
@@ -36,7 +36,7 @@ public class Core{
 		* @param Instância do layout do tabuleiro
 		* @return panel com design do tabuleiro
 		*/
-		layout.createCheckerboard(players); // Cria tabuleiro 8x8
+		layout.createBoard(players); // Cria tabuleiro 8x8
 		JPanel panel = new JPanel();
 		GroupLayout container = new GroupLayout(panel); 
 		panel.setLayout(container); // Define o layout que o painel deve utilizar	

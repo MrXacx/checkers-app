@@ -2,20 +2,28 @@ package app.checkers.components;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import java.awt.Color;
+import java.awt.Image;
 
 public class Player {
     private ImageIcon pieceIcon;
     private ImageIcon queenIcon;
     private int numberPieces;
-    
+private boolean direction;
+	
     public Player(String pieceName){
-        this.pieceIcon = new ImageIcon(pieceName);
+        this.pieceIcon = new ImageIcon("../src/PECA_"+pieceName+".png");
         this.queenIcon = new ImageIcon(pieceName);
         this.numberPieces = 12;
+
     }
 
+	public Image getImage(){
+		return this.pieceIcon.getImage();
+	}
+
     public boolean contains(Icon genericPiece){
-        return genericPiece.equals(this.pieceIcon) || genericPiece.equals(this.queenIcon);
+        return genericPiece.toString().equals(this.pieceIcon.toString()) || genericPiece.toString().equals(this.queenIcon.toString());
     }
 
     public void decrementSquad(){

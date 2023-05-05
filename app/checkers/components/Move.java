@@ -1,6 +1,6 @@
 package app.checkers.components;
- import java.util.Arrays;
 
+import java.util.ArrayList;
 import javax.swing.JButton;
 
 public class Move{
@@ -14,15 +14,27 @@ public class Move{
 		 * @param Coluna do objeto na linha
 		 */
 		this.origin = square; // Define origem do evento
-		int[][] moves = {{line-1, column-1}, {line-1, column+1}, {line+1, column-1}, {line+1, column+1}}; // Lista possíveis jogadas
+		ArrayList<int[]> moves = new ArrayList<>(); 
 		
-		for(int[] move : moves){
-			if((move[0] < 0 || move[0] > 7) || (move[1] < 0 || move[1] > 7)){ // Evita índices superiores a 7 ou inferiores a 0
-				//moves.remove(move);
+		if(line > 0){
+			if(column > 0){
+				moves.add(new int[]{line-1, column-1});
+			}
+			if(column < 7){
+				moves.add(new int[]{line-1, column+1});
 			}
 		}
 
-		this.possibleMoves =  moves; // Passa possiveís jogadas
+		if(line < 7){
+			if(column > 0){
+				moves.add(new int[]{line+1, column-1});
+			}
+			if(column < 7){
+				moves.add(new int[]{line+1, column+1});
+			}	
+		}
+		
+		this.possibleMoves =  moves.toArray(new int[0][]); // Passa possiveís jogadas
 	}
 	
 	public int[][] getPossibleMoves(){

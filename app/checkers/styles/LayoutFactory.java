@@ -9,7 +9,6 @@ import javax.swing.GroupLayout.Group;
 
 import java.util.Collection;
 
-import app.checkers.styles.ComponentsFactory;
 
 public class LayoutFactory extends ComponentsFactory{
 	private GroupLayout layout;
@@ -39,7 +38,7 @@ public class LayoutFactory extends ComponentsFactory{
     	var parallelGroup = layout.createParallelGroup(GroupLayout.Alignment.LEADING); // Adiciona grupo paralelo
     	var sequentialGroup = 	layout.createSequentialGroup();  // Adiciona grupo sequencial
     	
-    	for(JComponent[] line : this.checkerboard){ // IItera array
+    	for(JComponent[] line : this.board){ // IItera array
     		parallelGroup = parallelGroup.addGroup(this.alignComponents(layout.createSequentialGroup(), line));  // Alinha componentes da linha em relação aos componentes
     		sequentialGroup = sequentialGroup.addGroup(this.alignComponents(layout.createParallelGroup(GroupLayout.Alignment.BASELINE), line)); // Alinha componentes da linha em relação às outras linhas
     	}   	

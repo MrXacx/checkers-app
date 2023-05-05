@@ -2,64 +2,63 @@ package app.checkers.styles;
 
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import java.awt.Image;
 import java.awt.Color;
 
 
-import app.checkers.components.*;
+import app.checkers.components.Player;
+import app.checkers.components.Move;
 
 public class ComponentsFactory{
-	private Color[] color = {Color.BLACK, Color.WHITE};
+	private Color[] color = {Color.WHITE, Color.BLACK};
 	private Move move;
-
-	protected JButton[][] checkerboard;
+	private final int LENGTH = 8;
+	protected JButton[][] board;
     
-    public void createCheckerboard(Player[] player){	
+    public void createBoard(Player[] player){	
     	
-    	JButton square[][] = new JButton[8][8];
-
-    	//Image scaledImg = (new ImageIcon("../src/peca.png")).getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+    	this.board  = new JButton[this.LENGTH][this.LENGTH];
+		new ImageIcon(player[0].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
+		new ImageIcon(player[1].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
+    	
 		
-		for(int line = 0; line < square.length; line++){
-			for(int column = 0; column < square.length; column++){ 			
-				square[line][column]  = styleButton(new JButton(), column%2); // Inicia botão
-				
-				//square[line][column].setIcon(new ImageIcon(scaledImg));
+		for(int line = 0; line < this.LENGTH; line++){
+			for(int column = 0; column < this.LENGTH; column++){ 			
+				this.board[line][column]  = styleButton(new JButton(), column%2); // Inicia botão
 
 				final int nLine = line;
 				final int nColumn = column;
 
-				square[line][column].addActionListener(evt -> {
-					var icon = square[nLine][nColumn].getIcon();
-					if(icon instanceof ImageIcon && player[0].contains(icon)){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez
-
+				this.board[line][column].addActionListener(evt -> {
+					var icon = this.board[nLine][nColumn].getIcon();
+					
+					if(icon instanceof Icon ){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
 							if(move instanceof Move){ // Executa em caso de segundo clique indevido
-								this.normalizeButtons(move.getPossibleMoves()); // Faz botões da lista voltarem ao padrão
+								this.normalizeButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
 								move = null; // Anula jogada
+								return;
 							}
-							else{
-								move = new Move(square[nLine][nColumn], nLine, nColumn); // Inicia jogada no botão de origem
-								for(int[] possibleMove : move.getPossibleMoves()){
-									if(!(square[possibleMove[0]][possibleMove[1]].getIcon() instanceof ImageIcon)){
-										square[possibleMove[0]][possibleMove[1]].setBackground(Color.GREEN); // Evidencia possíveis jogadas
-									}
-								}
-							}
-						
+							
+							move = new Move(this.board[nLine][nColumn], nLine, nColumn); // Inicia jogada no botão de origem						
+							this.normalizeButtons(move.getPossibleMoves(), Color.GREEN);														
 					}
 					else if(move instanceof Move && move.contains(nLine, nColumn)){ // Executa se o botão for o segundo clique
-						move.moveTo(square[nLine][nColumn]);
-						this.normalizeButtons(move.getPossibleMoves());
-						move = null;
-						this.reverseArray(player);
+					
+						this.normalizeButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+						move.moveTo(this.board[nLine][nColumn]); // Move peça para o argumento
+						move = null; // Anula manipulador
+						this.reverseArray(player); // Alterna jogador
+						
 					}
+					
 				});			
 			}
 			this.reverseArray(this.color); // Inverte posições do array das cores
 		}
-		this.checkerboard =  square;
-        
 	}
+
+	
 	public JButton styleButton(JButton button, int index){
 		/**
 		 * @param Botão a ser estilizado
@@ -71,12 +70,14 @@ public class ComponentsFactory{
 		return button;
 	}
 
-	private void normalizeButtons(int[][] positions){
+	private void normalizeButtons(int[][] positions, Color color){
 		/**
 		 * @param Array com as posições dos botões a serem normalizados
 		 */
-		for(int[] position : positions){
-			this.checkerboard[position[0]][position[1]].setBackground(Color.BLACK); // Limpa possíveis jogadas
+		for(int[] possibleMove : positions){
+			if(!(this.board[possibleMove[0]][possibleMove[1]].getIcon() instanceof Icon)){
+				this.board[possibleMove[0]][possibleMove[1]].setBackground(color); // Evidencia possíveis jogadas
+			}
 		}
 	}
 
