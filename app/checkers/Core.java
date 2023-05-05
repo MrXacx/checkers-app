@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 
-import java.awt.Color;
 import app.checkers.components.Player;
 import app.checkers.styles.LayoutFactory;
 
@@ -46,8 +45,6 @@ public class Core{
 		layout.alignGroups(); // Define layout do painel
 		//layout.setVerticalGroup(); // Define layout do painel
 		
-		
-
 		return panel;
 	}
 	

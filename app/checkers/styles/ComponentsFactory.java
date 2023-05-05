@@ -16,17 +16,15 @@ public class ComponentsFactory{
 	private final int LENGTH = 8;
 	protected JButton[][] board;
     
-    public void createBoard(Player[] player){	
-    	
+    public void createBoard(Player[] player){	 
+		/**
+		* @param Array de jogadores
+		*/ 	
     	this.board  = new JButton[this.LENGTH][this.LENGTH];
-		new ImageIcon(player[0].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
-		new ImageIcon(player[1].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
-    	
-		
+
 		for(int line = 0; line < this.LENGTH; line++){
 			for(int column = 0; column < this.LENGTH; column++){ 			
 				this.board[line][column]  = styleButton(new JButton(), column%2); // Inicia botão
-
 				final int nLine = line;
 				final int nColumn = column;
 
@@ -56,10 +54,20 @@ public class ComponentsFactory{
 			}
 			this.reverseArray(this.color); // Inverte posições do array das cores
 		}
+		this.addPieces(new ImageIcon(player[0].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)), 0, 3);
+		this.addPieces(new ImageIcon(player[1].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)), 5, 8);
 	}
 
+	private void addPieces(Icon icon, int fromIndex, int toIndex){
+		for(int line = fromIndex; line < toIndex; line++){
+			for(int column = line % 2; column < this.LENGTH; column++){
+				this.board[line][column].setIcon(icon);
+			}
+		}
+		System.out.println("ENTROU");
+	}
 	
-	public JButton styleButton(JButton button, int index){
+	private JButton styleButton(JButton button, int index){
 		/**
 		 * @param Botão a ser estilizado
 		 * @param Índice de cor do background

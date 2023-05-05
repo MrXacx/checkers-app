@@ -7,8 +7,6 @@ import javax.swing.JComponent;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Group;
 
-import java.util.Collection;
-
 
 public class LayoutFactory extends ComponentsFactory{
 	private GroupLayout layout;
