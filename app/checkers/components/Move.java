@@ -7,36 +7,59 @@ public class Move{
 	private int[][] possibleMoves;
 	private JButton origin;
 
-	public Move(JButton square, int line, int column){
+	public Move(JButton square, int line, int column, Direction direction){
 		/**
 		 * @param Botão de origem
 		 * @param Linha do objeto no array
 		 * @param Coluna do objeto na linha
+		 * @param Direção que a peça deve seguir
 		 */
 		this.origin = square; // Define origem do evento
-		ArrayList<int[]> moves = new ArrayList<>(); 
+		ArrayList<int[]> moves = new ArrayList<>();
 		
-		if(line > 0){
-			if(column > 0){
-				moves.add(new int[]{line-1, column-1});
-			}
-			if(column < 7){
-				moves.add(new int[]{line-1, column+1});
-			}
+		if(line > 0 && direction == Direction.UP ){ // Executa se o botão estiver estiver numa linha superior ao índice 0 e subindo
+			this.getUpMoves(moves, line, column);
+			
+		}
+		else if(line < 7 && direction == Direction.DOWN){ // Executa se o botão estiver estiver numa linha inferior ao índice 7 e descendo
+			this.getDownMoves(moves, line, column);
+		}
+		
+		
+		this.possibleMoves =  moves.toArray(new int[0][]); // Passa possiveís jogadas		
+	}
+	private void getUpMoves(ArrayList<int[]> list, int line, int column){
+		/**
+		* @param Collection de possíveis jogadas
+		* @param Linha em que botão está localizado
+		* @param Coluna em que o botão está localizado
+		*/
+		
+		if(column > 0){
+			list.add(new int[]{line-1, column-1});
+		}
+		if(column < 7){
+			list.add(new int[]{line-1, column+1});
 		}
 
-		if(line < 7){
-			if(column > 0){
-				moves.add(new int[]{line+1, column-1});
-			}
-			if(column < 7){
-				moves.add(new int[]{line+1, column+1});
-			}	
-		}
-		
-		this.possibleMoves =  moves.toArray(new int[0][]); // Passa possiveís jogadas
 	}
 	
+	private void getDownMoves(ArrayList<int[]> list, int line, int column){
+		/**
+		* @param Collection de possíveis jogadas
+		* @param Linha em que botão está localizado
+		* @param Coluna em que o botão está localizado
+		*/
+		
+		if(column > 0){
+			list.add(new int[]{line+1, column-1});
+		}
+		if(column < 7){
+			list.add(new int[]{line+1, column+1});
+		}
+
+	}
+
 	public int[][] getPossibleMoves(){
 		/**
 		 * @return Array de todas as possíveis jogadas

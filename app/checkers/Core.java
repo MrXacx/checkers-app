@@ -4,21 +4,17 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 
+import app.checkers.components.Direction;
 import app.checkers.components.Player;
 import app.checkers.styles.LayoutFactory;
-
-/**
-* @author Ariel Santos
-* @version 1.0
-*/
 
 public class Core{
 	private static JFrame frame;
 	private static Player[] players = new Player[2];
 	
 	public static void main(String[] args){
-		players[0] =  new Player("BLACK"); // Inicia jogador das preças pretas
-		players[1] =  new Player("WHITE"); // Inicia jogador das peças brancas
+		players[0] =  new Player("RED", Direction.DOWN); // Inicia jogador das preças pretas
+		players[1] =  new Player("YELLOW", Direction.UP); // Inicia jogador das peças brancas
 
 		frame = new JFrame("Damas"); // Cria frame
 		
@@ -27,7 +23,7 @@ public class Core{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Determina que encerramento do frame equivale ao encerramento do código
 
 		frame.setLocationRelativeTo(null); // Centraliza frame
-		frame.setVisible(true); // Torna frame visível	
+		frame.setVisible(true); // Torna frame visível
 	}
 	
 	public static JPanel getLayout(LayoutFactory layout){

@@ -1,14 +1,12 @@
 package app.checkers.styles;
 
 import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.Icon;
-import java.awt.Image;
+import javax.swing.*;
+
 import java.awt.Color;
 
 
-import app.checkers.components.Player;
-import app.checkers.components.Move;
+import app.checkers.components.*;
 
 public class ComponentsFactory{
 	private Color[] color = {Color.WHITE, Color.BLACK};
@@ -31,19 +29,21 @@ public class ComponentsFactory{
 				this.board[line][column].addActionListener(evt -> {
 					var icon = this.board[nLine][nColumn].getIcon();
 					
-					if(icon instanceof Icon ){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
+					if(icon instanceof Icon && player[0].contains(icon)){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
 							if(move instanceof Move){ // Executa em caso de segundo clique indevido
-								this.normalizeButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+								this.paintButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
 								move = null; // Anula jogada
 								return;
 							}
 							
-							move = new Move(this.board[nLine][nColumn], nLine, nColumn); // Inicia jogada no botão de origem						
-							this.normalizeButtons(move.getPossibleMoves(), Color.GREEN);														
+							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem						
+							if(this.paintButtons(move.getPossibleMoves(), Color.GREEN) == 0){
+								move = null;
+							}										
 					}
 					else if(move instanceof Move && move.contains(nLine, nColumn)){ // Executa se o botão for o segundo clique
 					
-						this.normalizeButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+						this.paintButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
 						move.moveTo(this.board[nLine][nColumn]); // Move peça para o argumento
 						move = null; // Anula manipulador
 						this.reverseArray(player); // Alterna jogador
@@ -54,17 +54,17 @@ public class ComponentsFactory{
 			}
 			this.reverseArray(this.color); // Inverte posições do array das cores
 		}
-		this.addPieces(new ImageIcon(player[0].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)), 0, 3);
-		this.addPieces(new ImageIcon(player[1].getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)), 5, 8);
+		
+		this.addPieces(player[0].getIcon(), 0, 3);
+		this.addPieces(player[1].getIcon(), 5, 8);
 	}
 
 	private void addPieces(Icon icon, int fromIndex, int toIndex){
 		for(int line = fromIndex; line < toIndex; line++){
-			for(int column = line % 2; column < this.LENGTH; column++){
+			for(int column = line % 2; column < this.LENGTH; column += 2){
 				this.board[line][column].setIcon(icon);
 			}
 		}
-		System.out.println("ENTROU");
 	}
 	
 	private JButton styleButton(JButton button, int index){
@@ -78,15 +78,20 @@ public class ComponentsFactory{
 		return button;
 	}
 
-	private void normalizeButtons(int[][] positions, Color color){
+	private int paintButtons(int[][] positions, Color color){
 		/**
-		 * @param Array com as posições dos botões a serem normalizados
+		 * @param Array com as posições dos botões a serem pintados
+		 * @param Cor que será utilizado no background
+		 * @return Número de botões pintados
 		 */
-		for(int[] possibleMove : positions){
-			if(!(this.board[possibleMove[0]][possibleMove[1]].getIcon() instanceof Icon)){
-				this.board[possibleMove[0]][possibleMove[1]].setBackground(color); // Evidencia possíveis jogadas
+		 int count = 0;
+		for(int[] coord : positions){
+			if(!(this.board[coord[0]][coord[1]].getIcon() instanceof ImageIcon)){
+				this.board[coord[0]][coord[1]].setBackground(color); // Evidencia possíveis jogadas
+				count++;
 			}
 		}
+		return count;
 	}
 
 	private void reverseArray(Object[] genericArray){
