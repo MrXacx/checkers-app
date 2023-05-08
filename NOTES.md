@@ -30,7 +30,7 @@ Ao fim de cada jogada, um método pode ser chamado para alterar a vez do jogador
 
 ## Duplas
 
-Ariel e Pedro - Captura
-Italo e Igor - Promoção de dama
-Ricardo e Eide - Movimentação da dama
-Iure e Rafael - Checagem de vitória
+- Ariel e Pedro - Captura
+- Italo e Igor - Promoção de dama
+- Ricardo e Eide - Movimentação da dama
+- Iure e Rafael - Checagem de vitória
