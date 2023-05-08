@@ -18,6 +18,7 @@ public class ComponentsFactory{
 		/**
 		* @param Array de jogadores
 		*/ 	
+		
     	this.board  = new JButton[this.LENGTH][this.LENGTH];
 
 		for(int line = 0; line < this.LENGTH; line++){
@@ -36,10 +37,15 @@ public class ComponentsFactory{
 								return;
 							}
 							
-							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem						
+							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
+							move.setPossibleMoves(this.searchCaptures(nLine, nColumn, player));
+							
 							if(this.paintButtons(move.getPossibleMoves(), Color.GREEN) == 0){
-								move = null;
-							}										
+								if(this.paintButtons(move.getPossibleMoves(1), Color.GREEN) == 0){
+									move = null;
+								}
+							}
+						
 					}
 					else if(move instanceof Move && move.contains(nLine, nColumn)){ // Executa se o botão for o segundo clique
 					
@@ -60,9 +66,15 @@ public class ComponentsFactory{
 	}
 
 	private void addPieces(Icon icon, int fromIndex, int toIndex){
+		/**
+		 * @param Ícone da imagem a ser adicionada ao botão
+		 * @param Índice inicial incluso na iteração
+		 * @param Íncide final excluso da iteração
+		 */
+
 		for(int line = fromIndex; line < toIndex; line++){
 			for(int column = line % 2; column < this.LENGTH; column += 2){
-				this.board[line][column].setIcon(icon);
+				this.board[line][column].setIcon(icon); // Define ícone
 			}
 		}
 	}
@@ -77,7 +89,7 @@ public class ComponentsFactory{
 		button.setFocusPainted(false); // Retira foco
 		return button;
 	}
-
+	
 	private int paintButtons(int[][] positions, Color color){
 		/**
 		 * @param Array com as posições dos botões a serem pintados
@@ -98,9 +110,108 @@ public class ComponentsFactory{
 		/**
 		 * @param Array de duas posições a ser revertido
 		 */
+
 		var aux = genericArray[1];
 		genericArray[1] = genericArray[0];
 		genericArray[0] = aux;
+	}
+	
+
+	
+	private int[][] searchCaptures(int nLine, int nColumn, Player[] player){
+		/**
+		 * @param Linha do evento
+		 * @param Coluna do evento
+		 * @return Array de jogadas aptas a captura
+		 */
+		int[][] maxMoves = move.getMaxMoves();
+		int diff, n;
+		int actualMax[] = {nLine, nColumn};
+		
+		if(player[0].getDirection() == Direction.UP){
+			diff = Math.abs(nLine - maxMoves[0][0]);
+			
+			if(diff >= 2){
+				n = 1;
+				while(diff > n){
+					if(this.board[nLine-n][nColumn-n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine-n][nColumn-n].getIcon())){
+						n++;
+						if(!(this.board[nLine-n][nColumn-n].getIcon() instanceof ImageIcon)){
+							maxMoves[0][0] = nLine-n;
+							maxMoves[0][1] = nColumn-n;
+							n++;
+							continue;
+						}
+					}
+					break;
+				}
+			}
+			
+			diff = Math.abs(nLine - maxMoves[1][0]);
+			if(diff >= 2){
+				n = 1;
+				while(diff > n){
+					if(this.board[nLine-n][nColumn+n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine-n][nColumn+n].getIcon())){
+						n++;
+						if(!(this.board[nLine-n][nColumn+n].getIcon() instanceof ImageIcon)){
+							maxMoves[1][0] = nLine-n;
+							maxMoves[1][1]= nColumn+n;
+							n++;
+							continue;
+						}
+					}
+					break;
+				}
+			}
+		}
+		
+		else if(player[0].getDirection() == Direction.DOWN){
+			diff = Math.abs(nLine - maxMoves[0][0]);
+			
+			if(diff >= 2){
+				n = 1;
+				while(diff > n){
+					if(this.board[nLine+n][nColumn-n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine+n][nColumn-n].getIcon())){
+						n++;
+						if(!(this.board[nLine+n][nColumn-n].getIcon() instanceof ImageIcon)){
+							maxMoves[0][0] = nLine+n;
+							maxMoves[0][1] = nColumn-n;
+							n++;
+							continue;
+						}
+					}
+					break;
+				}
+			}
+			
+			diff = Math.abs(nLine - maxMoves[1][0]);
+			if(diff >= 2){
+				n = 1;
+				while(diff > n){
+					if(this.board[nLine+n][nColumn+n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine+n][nColumn+n].getIcon())){
+						n++;
+						if(!(this.board[nLine+n][nColumn+n].getIcon() instanceof ImageIcon)){
+							maxMoves[1][0] = nLine+n;
+							maxMoves[1][1]= nColumn+n;
+							n++;
+							continue;
+						}
+					}
+					break;
+				}
+			}
+		}
+
+
+		
+
+
+		
+
+		
+
+		
+		return maxMoves;
 	}
 }
 

@@ -32,6 +32,16 @@ public class Player {
 		return icon;
 	}
 
+    public ImageIcon getQueenIcon(){
+        /**
+         * @return Ícone da peça comum
+         */
+         
+		var icon = new ImageIcon(this.queenIcon);
+		icon.setDescription(this.colorPiece);
+		return icon;
+	}
+
     public Direction getDirection(){
         /**
          * @return Direção que a peça deve seguir
@@ -55,5 +65,8 @@ public class Player {
          * @paran número de peças a ser decrementado
          */
         this.numberPieces -= number; // Reduz número de peças em em quantidade variada
+    }
+    public boolean isLoser(){
+        return this.numberPieces == 0;
     }
 }

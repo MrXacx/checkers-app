@@ -1,11 +1,17 @@
 package app.checkers.components;
 
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JButton;
 
 public class Move{
-	private int[][] possibleMoves;
+	private List<int[]> possibleMoves = new ArrayList<>();
 	private JButton origin;
+	private int line, column;
+	private Direction direction;
+
 
 	public Move(JButton square, int line, int column, Direction direction){
 		/**
@@ -15,57 +21,94 @@ public class Move{
 		 * @param Direção que a peça deve seguir
 		 */
 		this.origin = square; // Define origem do evento
-		ArrayList<int[]> moves = new ArrayList<>();
+		this.line = line;
+		this.column = column;
+		this.direction = direction;
 		
-		if(line > 0 && direction == Direction.UP ){ // Executa se o botão estiver estiver numa linha superior ao índice 0 e subindo
-			this.getUpMoves(moves, line, column);
-			
-		}
-		else if(line < 7 && direction == Direction.DOWN){ // Executa se o botão estiver estiver numa linha inferior ao índice 7 e descendo
-			this.getDownMoves(moves, line, column);
-		}
-		
-		
-		this.possibleMoves =  moves.toArray(new int[0][]); // Passa possiveís jogadas		
-	}
-	private void getUpMoves(ArrayList<int[]> list, int line, int column){
-		/**
-		* @param Collection de possíveis jogadas
-		* @param Linha em que botão está localizado
-		* @param Coluna em que o botão está localizado
-		*/
-		
-		if(column > 0){
-			list.add(new int[]{line-1, column-1});
-		}
-		if(column < 7){
-			list.add(new int[]{line-1, column+1});
-		}
-
 	}
 	
-	private void getDownMoves(ArrayList<int[]> list, int line, int column){
+	public int[][] getPossibleMoves(int skip){
 		/**
-		* @param Collection de possíveis jogadas
-		* @param Linha em que botão está localizado
-		* @param Coluna em que o botão está localizado
-		*/
+		 * @return Array de todas as possíveis jogadas
+		 */
+		 	
+		if(this.line > (skip-1) && direction == Direction.UP ){ // Executa se o botão estiver estiver numa linha superior ao índice 0 e subindo
+			this.getUpMoves(skip);
+		}
+		else if(this.line < (8 - skip) && direction == Direction.DOWN){ // Executa se o botão estiver estiver numa linha inferior ao índice 7 e descendo
+			this.getDownMoves(skip);
+		}
 		
-		if(column > 0){
-			list.add(new int[]{line+1, column-1});
-		}
-		if(column < 7){
-			list.add(new int[]{line+1, column+1});
-		}
-
+		return this.possibleMoves.toArray(new int[0][]); // Passa possiveís jogadas	
 	}
-
+	
 	public int[][] getPossibleMoves(){
 		/**
 		 * @return Array de todas as possíveis jogadas
 		 */
-		return this.possibleMoves;
+
+		return this.possibleMoves.toArray(new int[0][]); // Passa possiveís jogadas	
 	}
+	
+		public void setPossibleMoves(int[][] moves){
+		/**
+		 * @return Array de todas as possíveis jogadas
+		 */
+
+		this.possibleMoves.addAll(Arrays.asList(moves)); // Passa possiveís jogadas	
+	}
+	
+	
+	public int[][] getMaxMoves(){
+		/**
+		 * @return Lista de jogadas mais longas possíveis
+		 */
+
+		ArrayList<int[]> maxMoves = new ArrayList<>(); // Inicia lista
+		final int lineToMax = 7 - this.line; // Intervalo entre a posição da linha e o 7
+		final int columnToMax = 7 - this.column; // Intervalo entre a posição da coluna e o 7
+		
+		if(this.direction == Direction.UP){
+			maxMoves.add(this.line < this.column ? new int[]{0, this.column - this.line} : new int[]{this.line - this.column, 0}); // Movimenta na diagonal superior esquerda
+			maxMoves.add(this.line < columnToMax ? new int[]{0, this.column + this.line} : new int[]{this.line - columnToMax, 7}); // Moviemnta na diagonal superior direita
+		}
+		
+		if(this.direction == Direction.DOWN){
+			maxMoves.add(lineToMax < this.column ? new int[]{7, this.column - lineToMax} : new int[]{this.line + this.column, 0}); // Movimenta na diagonal inferior esquerda
+			maxMoves.add(lineToMax < columnToMax ? new int[]{7, this.column + lineToMax} : new int[]{this.line + columnToMax, 7}); // Moivmenta na diagonal inferior direita
+		}
+		
+		return maxMoves.toArray(new int[0][]);
+	}
+	
+	private void getUpMoves(int skip){
+		/**
+		* @param Número de casas que o movimento deve cobrir
+		*/
+		
+		if(this.column > (skip-1)){
+			this.possibleMoves.add(new int[]{this.line-skip, this.column-skip});
+		}
+		if(this.column < (8-skip)){
+			this.possibleMoves.add(new int[]{this.line-skip, this.column+skip});
+		}
+
+	}
+	
+	private void getDownMoves(int skip){
+		/**
+		* @param Número de casas que o movimento deve cobrir
+		*/
+		
+		if(this.column > (skip-1)){
+			this.possibleMoves.add(new int[]{this.line+skip, this.column-skip});
+		}
+		if(this.column < (8-skip)){
+			this.possibleMoves.add(new int[]{this.line+skip, this.column+skip});
+		}
+
+	}
+
 	
 	public boolean contains(int line, int column){
 		/**
@@ -73,18 +116,20 @@ public class Move{
 		 * @param Coluna do botão na linha
 		 * @return Booleano da existência dos argumentos no array de jogadas possíveis
 		 */
-		for(int[] moves : this.getPossibleMoves()){
-			if(moves[0] == line && moves[1] == column){ // Executa se a posição estiver no array de inteiros
+		for(int[] coord : this.possibleMoves.toArray(new int[0][])){
+			if(coord[0] == line && coord[1] == column){
 				return true;
 			}
 		}
-		return false;
+		 return false;
+
 	}
 	
 	public void moveTo(JButton end){
 		/**
 		 * @param Botão de destino da imagem
 		 */
+
 		end.setIcon(this.origin.getIcon()); // Adiciona imagem no botão de destion
 		this.origin.setIcon(null); // Retira imagem do botão de origem
 	}
