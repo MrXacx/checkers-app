@@ -28,35 +28,9 @@ Podemos utilizar uma variável que contenha o número identificador do jogador d
 Nesse viés, cada peça de cor distinta deve ser nomeada com o número identificador de seu jogador (se houver como identificar imagens no botão, esta linha pode sofrer modificações)
 Ao fim de cada jogada, um método pode ser chamado para alterar a vez do jogador.
 
-## Movimento simples
+## Duplas
 
-``` Pseudocódigo
-inicioalgoritimo
-	Se há uma peça nesta posição então
-		Se esta peça pode ser movida pelo jogador atual então
-			Se a lista de posições jogáveis estiver preenchida então
-				Para cada de lista de posições jogáveis faça
-					Mude o background para preto
-				Fimpara
-				Limpe lista
-			Senão
-				Crie uma lista com possíveis jogadas para esta posição [[linha-1][coluna-1], [linha-1][coluna+1], [linha+1][coluna-1] e [linha+1][coluna+1]]
-				Para cada de lista de posições jogáveis faça
-					Se botão na posição determinada não possue peça então
-						Mude o background de  botão na posição determinada para verde
-					Fimse
-				Fimpara
-			Fimse
-		Fimse
-		Senão
-			Se botão desta posição consta em lista com possíveis jogadas então
-				Mova a imagem do botão anteriormente clicado para este
-				Para cada de lista de posições jogáveis faça
-					Mude o background para preto
-				Fimpara
-				Alterne a vez do jogador
-			Fimse
-		Fimse
-Fimalgoritmo
-```
-	
+Ariel e Pedro - Captura
+Italo e Igor - Promoção de dama
+Ricardo e Eide - Movimentação da dama
+Iure e Rafael - Checagem de vitória
