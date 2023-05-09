@@ -33,29 +33,25 @@ public class ComponentsFactory{
 					
 					if(icon instanceof Icon && player[0].contains(icon)){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
 							if(move instanceof Move){ // Executa em caso de segundo clique indevido
-								this.paintButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+								this.paintButtons(move.getMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
 								move = null; // Anula jogada
 								return;
 							}
 							
 							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
-
-							move.setPossibleMoves(this.searchCaptures(nLine, nColumn, player[1], player[0].getDirection()));
+							move.searchCaptures(this.board, player[1]);
 							
-							if(this.paintButtons(move.getPossibleMoves(), Color.GREEN) == 0){
-								if(this.paintButtons(move.getPossibleMoves(1), Color.GREEN) == 0){
+							if(this.paintButtons(move.getMoves(), Color.GREEN) == 0 && this.paintButtons(move.searchPossibleMoves(), Color.GREEN) == 0){
 									move = null;
-								}
 							}
 						
 					}
 					else if(move instanceof Move && move.contains(nLine, nColumn)){ // Executa se o botão for o segundo clique
-						this.paintButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+						this.paintButtons(move.getMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
 
-						if(move.getSkip() == 0){
-							possibleCaptures.get(move.indexOf(nLine, nColumn)).setIcon(null);
-							player[0].decrementSquad();
-							possibleCaptures.clear();
+						if(move.isCapture()){ // Executa se alguma captura for possível
+							move.capture(move.indexOf(nLine, nColumn)); // realiza captura
+							player[1].decrementSquad(); // Decrementa plantel do adversário
 						}
 
 						move.moveTo(this.board[nLine][nColumn]); // Move peça para o argumento
@@ -96,6 +92,7 @@ public class ComponentsFactory{
 		 * @param Índice de cor do background
 		 * @return Botão estilizado
 		 */
+		 
 		button.setBackground (color[index]); // Define cor do background de acordo com o módulo
 		button.setFocusPainted(false); // Retira foco
 		return button;
@@ -107,6 +104,7 @@ public class ComponentsFactory{
 		 * @param Cor que será utilizado no background
 		 * @return Número de botões pintados
 		 */
+		 
 		 int count = 0;
 		for(int[] coord : positions){
 			if(!(this.board[coord[0]][coord[1]].getIcon() instanceof ImageIcon)){
@@ -118,44 +116,12 @@ public class ComponentsFactory{
 	}
 
 	private void reverseArray(Object[] genericArray){
-		/**
-		 * @param Array de duas posições a ser revertido
-		 */
+		// @param Array de duas posições a ser revertido
 		
 		Object aux = genericArray[1];
 		genericArray[1] = genericArray[0];
 		genericArray[0] = aux;
 	}
 
-	private int[][] searchCaptures(int line, int column, Player player, Direction direction){
-		ArrayList<int[]> moves = new ArrayList<>();
-
-		if((line > 1 && column > 1) && direction == Direction.UP){
-			if(player.contains(this.board[line-1][column-1].getIcon()) && this.board[line-2][column-2].getIcon() == null){
-				moves.add(new int[]{line-2, column-2});
-				possibleCaptures.add(this.board[line-1][column-1]);
-				//this.board[line-1][column-1];
-			}
-		}
-		if((line > 1 && column < 6) && direction == Direction.UP){
-			if(player.contains(this.board[line-1][column+1].getIcon()) && this.board[line-2][column+2].getIcon() == null){
-				moves.add(new int[]{line-2, column+2});
-				possibleCaptures.add(this.board[line-1][column+1]);
-			}
-		}
-		if((line < 6 && column > 1) && direction == Direction.DOWN){
-			if(player.contains(this.board[line+1][column-1].getIcon()) && this.board[line+2][column-2].getIcon() == null){
-				moves.add(new int[]{line+2, column-2});
-				possibleCaptures.add(this.board[line+1][column-1]);
-			}
-		}
-		if((line < 6 && column < 6) && direction == Direction.DOWN){
-			if(player.contains(this.board[line+1][column+1].getIcon()) && this.board[line+2][column+2].getIcon() == null){
-				moves.add(new int[]{line+2, column+2});
-				possibleCaptures.add(this.board[line+1][column+1]);
-			}
-		}
-		return moves.toArray(new int[0][]);
-	}
 }
 
