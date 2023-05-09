@@ -5,8 +5,8 @@ import javax.swing.ImageIcon;
 import java.awt.Image;
 
 public class Player {
-    private Image pieceIcon; // Imagem das peças comuns
-    private Image queenIcon; // Imagem das peças promovidas
+    public Image pieceIcon; // Imagem das peças comuns
+    public Image queenIcon; // Imagem das peças promovidas
     private int numberPieces = 12; // Total de peças que jogador possui
     private Direction direction; // Direção que as peças comuns devem seguir
     private String colorPiece;
@@ -18,7 +18,7 @@ public class Player {
          */
          this.colorPiece = colorName;
         this.pieceIcon = (new ImageIcon("../src/"+colorName+"_PIECE.png")).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH); //new ImageIcon("../src/PECA_"+pieceName+".png");
-        this.queenIcon = (new ImageIcon("../src/"+colorName+"_PIECE.png")).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
+        this.queenIcon = (new ImageIcon("../src/dama.png")).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH); //new ImageIcon("../src/PECA_"+pieceName+".png");
         this.direction = direction;
     }
 
@@ -54,7 +54,7 @@ public class Player {
 		 * @param Ícone da peça clicada
 		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
 		 */
-        return ((ImageIcon) genericPiece).getDescription().equals(this.colorPiece);
+        return genericPiece != null &&  ((ImageIcon) genericPiece).getDescription().equals(this.colorPiece);
     }
 
     public void decrementSquad(){
@@ -65,8 +65,5 @@ public class Player {
          * @paran número de peças a ser decrementado
          */
         this.numberPieces -= number; // Reduz número de peças em em quantidade variada
-    }
-    public boolean isLoser(){
-        return this.numberPieces == 0;
     }
 }

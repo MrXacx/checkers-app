@@ -28,9 +28,11 @@ Podemos utilizar uma variável que contenha o número identificador do jogador d
 Nesse viés, cada peça de cor distinta deve ser nomeada com o número identificador de seu jogador (se houver como identificar imagens no botão, esta linha pode sofrer modificações)
 Ao fim de cada jogada, um método pode ser chamado para alterar a vez do jogador.
 
+
+
 ## Duplas
 
-- Ariel e Pedro - Captura
-- Italo e Igor - Promoção de dama
-- Ricardo e Eide - Movimentação da dama
-- Iure e Rafael - Checagem de vitória
+- Ariel e Pedro - Captura composta e mensagem de fim
+- Italo e Igor - Embaralhamento das cores
+- Ricardo e Eide - Movimentação da dama e menu
+- Iure e Rafael - Checagem de vitória e empate

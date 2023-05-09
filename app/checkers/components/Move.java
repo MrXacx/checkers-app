@@ -11,6 +11,7 @@ public class Move{
 	private JButton origin;
 	private int line, column;
 	private Direction direction;
+	private int skip = 0;
 
 
 	public Move(JButton square, int line, int column, Direction direction){
@@ -26,19 +27,22 @@ public class Move{
 		this.direction = direction;
 		
 	}
-	
+
 	public int[][] getPossibleMoves(int skip){
 		/**
 		 * @return Array de todas as possíveis jogadas
 		 */
-		 	
-		if(this.line > (skip-1) && direction == Direction.UP ){ // Executa se o botão estiver estiver numa linha superior ao índice 0 e subindo
-			this.getUpMoves(skip);
+
+		 this.skip = skip;
+
+		if(this.line > (this.skip-1) && direction == Direction.UP ){ // Executa se o botão estiver estiver numa linha superior ao índice 0 e subindo
+			this.getUpMoves();
 		}
-		else if(this.line < (8 - skip) && direction == Direction.DOWN){ // Executa se o botão estiver estiver numa linha inferior ao índice 7 e descendo
-			this.getDownMoves(skip);
+		else if(this.line < (8 - this.skip) && direction == Direction.DOWN){ // Executa se o botão estiver estiver numa linha inferior ao índice 7 e descendo
+			this.getDownMoves();
 		}
 		
+
 		return this.possibleMoves.toArray(new int[0][]); // Passa possiveís jogadas	
 	}
 	
@@ -50,15 +54,28 @@ public class Move{
 		return this.possibleMoves.toArray(new int[0][]); // Passa possiveís jogadas	
 	}
 	
-		public void setPossibleMoves(int[][] moves){
+	public void setPossibleMoves(int[][] moves){
 		/**
 		 * @return Array de todas as possíveis jogadas
 		 */
 
 		this.possibleMoves.addAll(Arrays.asList(moves)); // Passa possiveís jogadas	
 	}
-	
-	
+
+	public int getSkip(){
+		return this.skip;
+	}
+
+	public int indexOf(int line, int column){
+		for(int index = 0; index < this.possibleMoves.size(); index++){
+			int[] coord = this.possibleMoves.get(index);
+			if(coord[0] == line && coord[1] == column){
+				return index;
+			}
+		}
+		return -1;
+	}
+
 	public int[][] getMaxMoves(){
 		/**
 		 * @return Lista de jogadas mais longas possíveis
@@ -81,35 +98,28 @@ public class Move{
 		return maxMoves.toArray(new int[0][]);
 	}
 	
-	private void getUpMoves(int skip){
-		/**
-		* @param Número de casas que o movimento deve cobrir
-		*/
+	private void getUpMoves(){
 		
-		if(this.column > (skip-1)){
-			this.possibleMoves.add(new int[]{this.line-skip, this.column-skip});
+		if(this.column > (this.skip-1)){
+			this.possibleMoves.add(new int[]{this.line-this.skip, this.column-this.skip});
 		}
 		if(this.column < (8-skip)){
-			this.possibleMoves.add(new int[]{this.line-skip, this.column+skip});
+			this.possibleMoves.add(new int[]{this.line-this.skip, this.column+this.skip});
 		}
 
 	}
 	
-	private void getDownMoves(int skip){
-		/**
-		* @param Número de casas que o movimento deve cobrir
-		*/
+	private void getDownMoves(){
 		
-		if(this.column > (skip-1)){
-			this.possibleMoves.add(new int[]{this.line+skip, this.column-skip});
+		if(this.column > (this.skip-1)){
+			this.possibleMoves.add(new int[]{this.line+this.skip, this.column-this.skip});
 		}
 		if(this.column < (8-skip)){
-			this.possibleMoves.add(new int[]{this.line+skip, this.column+skip});
+			this.possibleMoves.add(new int[]{this.line+this.skip, this.column+this.skip});
 		}
 
 	}
 
-	
 	public boolean contains(int line, int column){
 		/**
 		 * @param Linha do botão no array

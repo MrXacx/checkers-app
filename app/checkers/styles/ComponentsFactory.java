@@ -4,7 +4,7 @@ import javax.swing.JButton;
 import javax.swing.*;
 
 import java.awt.Color;
-
+import java.util.ArrayList;
 
 import app.checkers.components.*;
 
@@ -13,7 +13,8 @@ public class ComponentsFactory{
 	private Move move;
 	private final int LENGTH = 8;
 	protected JButton[][] board;
-    
+    private ArrayList<JButton> possibleCaptures = new ArrayList<>();
+
     public void createBoard(Player[] player){	 
 		/**
 		* @param Array de jogadores
@@ -28,7 +29,7 @@ public class ComponentsFactory{
 				final int nColumn = column;
 
 				this.board[line][column].addActionListener(evt -> {
-					var icon = this.board[nLine][nColumn].getIcon();
+					Icon icon = this.board[nLine][nColumn].getIcon();
 					
 					if(icon instanceof Icon && player[0].contains(icon)){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
 							if(move instanceof Move){ // Executa em caso de segundo clique indevido
@@ -38,7 +39,8 @@ public class ComponentsFactory{
 							}
 							
 							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
-							move.setPossibleMoves(this.searchCaptures(nLine, nColumn, player));
+
+							move.setPossibleMoves(this.searchCaptures(nLine, nColumn, player[1], player[0].getDirection()));
 							
 							if(this.paintButtons(move.getPossibleMoves(), Color.GREEN) == 0){
 								if(this.paintButtons(move.getPossibleMoves(1), Color.GREEN) == 0){
@@ -48,10 +50,19 @@ public class ComponentsFactory{
 						
 					}
 					else if(move instanceof Move && move.contains(nLine, nColumn)){ // Executa se o botão for o segundo clique
-					
 						this.paintButtons(move.getPossibleMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+
+						if(move.getSkip() == 0){
+							possibleCaptures.get(move.indexOf(nLine, nColumn)).setIcon(null);
+							player[0].decrementSquad();
+							possibleCaptures.clear();
+						}
+
 						move.moveTo(this.board[nLine][nColumn]); // Move peça para o argumento
 						move = null; // Anula manipulador
+						if(nLine == 0 || nLine == 7){
+							this.board[nLine][nColumn].setIcon(player[0].getQueenIcon());
+						}
 						this.reverseArray(player); // Alterna jogador
 						
 					}
@@ -110,108 +121,41 @@ public class ComponentsFactory{
 		/**
 		 * @param Array de duas posições a ser revertido
 		 */
-
-		var aux = genericArray[1];
+		
+		Object aux = genericArray[1];
 		genericArray[1] = genericArray[0];
 		genericArray[0] = aux;
 	}
-	
 
-	
-	private int[][] searchCaptures(int nLine, int nColumn, Player[] player){
-		/**
-		 * @param Linha do evento
-		 * @param Coluna do evento
-		 * @return Array de jogadas aptas a captura
-		 */
-		int[][] maxMoves = move.getMaxMoves();
-		int diff, n;
-		int actualMax[] = {nLine, nColumn};
-		
-		if(player[0].getDirection() == Direction.UP){
-			diff = Math.abs(nLine - maxMoves[0][0]);
-			
-			if(diff >= 2){
-				n = 1;
-				while(diff > n){
-					if(this.board[nLine-n][nColumn-n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine-n][nColumn-n].getIcon())){
-						n++;
-						if(!(this.board[nLine-n][nColumn-n].getIcon() instanceof ImageIcon)){
-							maxMoves[0][0] = nLine-n;
-							maxMoves[0][1] = nColumn-n;
-							n++;
-							continue;
-						}
-					}
-					break;
-				}
-			}
-			
-			diff = Math.abs(nLine - maxMoves[1][0]);
-			if(diff >= 2){
-				n = 1;
-				while(diff > n){
-					if(this.board[nLine-n][nColumn+n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine-n][nColumn+n].getIcon())){
-						n++;
-						if(!(this.board[nLine-n][nColumn+n].getIcon() instanceof ImageIcon)){
-							maxMoves[1][0] = nLine-n;
-							maxMoves[1][1]= nColumn+n;
-							n++;
-							continue;
-						}
-					}
-					break;
-				}
+	private int[][] searchCaptures(int line, int column, Player player, Direction direction){
+		ArrayList<int[]> moves = new ArrayList<>();
+
+		if((line > 1 && column > 1) && direction == Direction.UP){
+			if(player.contains(this.board[line-1][column-1].getIcon()) && this.board[line-2][column-2].getIcon() == null){
+				moves.add(new int[]{line-2, column-2});
+				possibleCaptures.add(this.board[line-1][column-1]);
+				//this.board[line-1][column-1];
 			}
 		}
-		
-		else if(player[0].getDirection() == Direction.DOWN){
-			diff = Math.abs(nLine - maxMoves[0][0]);
-			
-			if(diff >= 2){
-				n = 1;
-				while(diff > n){
-					if(this.board[nLine+n][nColumn-n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine+n][nColumn-n].getIcon())){
-						n++;
-						if(!(this.board[nLine+n][nColumn-n].getIcon() instanceof ImageIcon)){
-							maxMoves[0][0] = nLine+n;
-							maxMoves[0][1] = nColumn-n;
-							n++;
-							continue;
-						}
-					}
-					break;
-				}
-			}
-			
-			diff = Math.abs(nLine - maxMoves[1][0]);
-			if(diff >= 2){
-				n = 1;
-				while(diff > n){
-					if(this.board[nLine+n][nColumn+n].getIcon() instanceof ImageIcon && player[1].contains(this.board[nLine+n][nColumn+n].getIcon())){
-						n++;
-						if(!(this.board[nLine+n][nColumn+n].getIcon() instanceof ImageIcon)){
-							maxMoves[1][0] = nLine+n;
-							maxMoves[1][1]= nColumn+n;
-							n++;
-							continue;
-						}
-					}
-					break;
-				}
+		if((line > 1 && column < 6) && direction == Direction.UP){
+			if(player.contains(this.board[line-1][column+1].getIcon()) && this.board[line-2][column+2].getIcon() == null){
+				moves.add(new int[]{line-2, column+2});
+				possibleCaptures.add(this.board[line-1][column+1]);
 			}
 		}
-
-
-		
-
-
-		
-
-		
-
-		
-		return maxMoves;
+		if((line < 6 && column > 1) && direction == Direction.DOWN){
+			if(player.contains(this.board[line+1][column-1].getIcon()) && this.board[line+2][column-2].getIcon() == null){
+				moves.add(new int[]{line+2, column-2});
+				possibleCaptures.add(this.board[line+1][column-1]);
+			}
+		}
+		if((line < 6 && column < 6) && direction == Direction.DOWN){
+			if(player.contains(this.board[line+1][column+1].getIcon()) && this.board[line+2][column+2].getIcon() == null){
+				moves.add(new int[]{line+2, column+2});
+				possibleCaptures.add(this.board[line+1][column+1]);
+			}
+		}
+		return moves.toArray(new int[0][]);
 	}
 }
 
