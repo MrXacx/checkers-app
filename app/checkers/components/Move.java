@@ -51,15 +51,13 @@ public class Move{
 
 	}
 	
-	private void getDownMoves(){
-		
+	private void getDownMoves(){		
 		if(this.column > 0){
 			this.moves.add(new int[]{this.line+1, this.column-1}); // Canto inferior esquerdo
 		}
 		if(this.column < 7){
 			this.moves.add(new int[]{this.line+1, this.column+1}); // Canto inferior direito
 		}
-
 	}
 
 	public int[][] searchCaptures( JButton[][] board, Player owner){
@@ -67,8 +65,8 @@ public class Move{
 		* @param Tabuleiro
 		* @param Dono das peças a serem capturadas
 		*/
-		if(this.line > 1 && this.direction == Direction.UP){
 		
+		if(this.line > 1){		
 			if(this.column > 1 && (owner.contains(board[this.line-1][this.column-1].getIcon()) && board[this.line-2][this.column-2].getIcon() == null)){
 					this.moves.add(new int[]{this.line-2, this.column-2});
 					this.possibleCaptures.add(board[this.line-1][this.column-1]);
@@ -76,12 +74,10 @@ public class Move{
 			if(this.column < 6 && (owner.contains(board[line-1][this.column+1].getIcon()) && board[this.line-2][this.column+2].getIcon() == null)){
 					this.moves.add(new int[]{this.line-2, this.column+2});
 					this.possibleCaptures.add(board[this.line-1][this.column+1]);
-			}
-			
+			}			
 		}
 		
-		if(this.line < 6  && this.direction == Direction.DOWN){	
-		
+		if(this.line < 6){			
 			if(this.column > 1 && (owner.contains(board[this.line+1][this.column-1].getIcon()) && board[this.line+2][this.column-2].getIcon() == null)){
 				this.moves.add(new int[]{this.line+2, this.column-2});
 				this.possibleCaptures.add(board[this.line+1][this.column-1]);
@@ -89,9 +85,9 @@ public class Move{
 			if(this.column < 6 && (owner.contains(board[this.line+1][this.column+1].getIcon()) && board[this.line+2][this.column+2].getIcon() == null)){
 				this.moves.add(new int[]{this.line+2, this.column+2});
 				this.possibleCaptures.add(board[this.line+1][this.column+1]);
-			}
-			
+			}			
 		}
+		
 		return moves.toArray(new int[0][]);
 	}
 	
@@ -117,51 +113,15 @@ public class Move{
         // Verificar movimento na diagonal inferior direita
         for (nLine = line + 1, nColumn = column + 1; nLine < 8 && nColumn < 8; nLine++, nColumn++) {
             moves.add(new int[]{nLine, nColumn});
-        }
+       }
+        
         return this.moves.toArray(new int[0][]); // Passa possiveís jogadas	
 	}
 	
-	public int[][] searchCaptures(int line, int column, JButton[][] board, Player owner){
-		/**
-		* @param Tabuleiro
-		* @param Dono das peças a serem capturadas
-		*/
-
-		if(line > 1 && this.direction == Direction.UP){
-			
-			if(column > 1 && (owner.contains(board[line-1][column-1].getIcon()) && board[line-2][column-2].getIcon() == null)){
-					this.moves.add(0, new int[]{line-2, column-2});
-					this.possibleCaptures.add(0, board[line-1][column-1]);
-			}
-			if(column < 6 && (owner.contains(board[line-1][column+1].getIcon()) && board[line-2][column+2].getIcon() == null)){
-					this.moves.add(1, new int[]{line-2, column+2});
-					this.possibleCaptures.add(1, board[line-1][column+1]);
-			}
-			
-		}
-		
-		if(line < 6  && this.direction == Direction.DOWN){	
-		
-			if(column > 1 && (owner.contains(board[line+1][column-1].getIcon()) && board[line+2][column-2].getIcon() == null)){
-				this.moves.add(2, new int[]{line+2, column-2});
-				this.possibleCaptures.add(2, board[line+1][column-1]);
-			}
-			if(column < 6 && (owner.contains(board[line+1][column+1].getIcon()) && board[line+2][column+2].getIcon() == null)){
-				this.moves.add(3, new int[]{line+2, column+2});
-				this.possibleCaptures.add(3, board[line+1][column+1]);
-			}
-			
-		}
-		return moves.toArray(new int[0][]);
-	}
-	
-	
 	public int[][] getMoves(){
 		// @return Array de todas as possíveis jogadas
-
 		return this.moves.toArray(new int[0][]); // Passa possiveís jogadas	
 	}
-	
 	
 	public boolean isCapture(){
 		// @return Booleano de se a lista de capturas viáveis está preenchida

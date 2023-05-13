@@ -39,14 +39,15 @@ public class ComponentsFactory{
 							
 							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
 							
-							if(player[0].isQueen(icon)){
-								move.searchMaxMoves();
-							}
-							else{
-								move.searchCaptures(this.board, player[1]);
-							}
 							
-							if(this.paintButtons(move.getMoves(), Color.YELLOW) == 0 && this.paintButtons(move.searchPossibleMoves(), Color.GREEN) == 0){
+							move.searchCaptures(this.board, player[1]);
+							
+							if(
+								this.paintButtons(move.getMoves(), Color.YELLOW) == 0 && 
+								this.paintButtons(
+									player[0].isQueen(icon) ? move.searchMaxMoves() : move.searchPossibleMoves(), 
+								Color.GREEN) == 0
+							){
 									move = null;
 							}
 						
@@ -112,6 +113,7 @@ public class ComponentsFactory{
 		 
 		 int count = 0;
 		for(int[] coord : positions){
+			
 			if(!(this.board[coord[0]][coord[1]].getIcon() instanceof ImageIcon)){
 				this.board[coord[0]][coord[1]].setBackground(color); // Evidencia possíveis jogadas
 				count++;
