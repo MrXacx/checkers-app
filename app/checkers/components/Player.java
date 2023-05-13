@@ -1,15 +1,15 @@
 package app.checkers.components;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import java.awt.Image;
 
 public class Player {
     public Image pieceIcon; // Imagem das peças comuns
     public Image queenIcon; // Imagem das peças promovidas
+    private String colorPiece;
     private int numberPieces = 12; // Total de peças que jogador possui
     private Direction direction; // Direção que as peças comuns devem seguir
-    private String colorPiece;
 	
     public Player(String colorName, Direction direction){
         /**
@@ -38,7 +38,7 @@ public class Player {
          */
          
 		var icon = new ImageIcon(this.queenIcon);
-		icon.setDescription(this.colorPiece);
+		icon.setDescription(this.colorPiece+"_queen");
 		return icon;
 	}
 
@@ -54,7 +54,14 @@ public class Player {
 		 * @param Ícone da peça clicada
 		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
 		 */
-        return genericPiece != null &&  ((ImageIcon) genericPiece).getDescription().equals(this.colorPiece);
+        return genericPiece != null &&  (((ImageIcon) genericPiece).getDescription().equals(this.colorPiece) || ((ImageIcon) genericPiece).getDescription().equals(this.colorPiece+"_queen"));
+    }
+     public boolean isQueen(Icon genericPiece){
+        /**
+		 * @param Ícone da peça clicada
+		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
+		 */
+        return genericPiece != null &&  ((ImageIcon) genericPiece).getDescription().equals(this.colorPiece+"_queen");
     }
 
     public void decrementSquad(){

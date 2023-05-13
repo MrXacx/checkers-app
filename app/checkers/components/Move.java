@@ -1,6 +1,5 @@
 package app.checkers.components;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +27,6 @@ public class Move{
 		this.direction = direction;
 		
 	}
-	
 	public int[][] searchPossibleMoves(){
 		// @return Array de todas as possíveis jogadas
 		
@@ -63,7 +61,7 @@ public class Move{
 		}
 
 	}
-	
+
 	public int[][] searchCaptures( JButton[][] board, Player owner){
 		/**
 		* @param Tabuleiro
@@ -97,6 +95,67 @@ public class Move{
 		return moves.toArray(new int[0][]);
 	}
 	
+	public int[][] searchMaxMoves(){
+		// @return Lista de jogadas mais longas possíveis
+		int nLine, nColumn;
+		
+		 // Verificar movimento na diagonal superior esquerda
+        for (nLine = line - 1, nColumn = column - 1; nLine >= 0 && nColumn >= 0; nLine--, nColumn--) {
+            moves.add(new int[]{nLine, nColumn});
+        }
+
+        // Verificar movimento na diagonal superior direita
+        for (nLine = line - 1, nColumn = column + 1; nLine >= 0 && nColumn < 8; nLine--, nColumn++) {
+            moves.add(new int[]{nLine, nColumn});
+        }
+
+        // Verificar movimento na diagonal inferior esquerda
+        for (nLine = line + 1, nColumn = column - 1; nLine < 8 && nColumn >= 0; nLine++, nColumn--) {
+            moves.add(new int[]{nLine, nColumn});
+        }
+
+        // Verificar movimento na diagonal inferior direita
+        for (nLine = line + 1, nColumn = column + 1; nLine < 8 && nColumn < 8; nLine++, nColumn++) {
+            moves.add(new int[]{nLine, nColumn});
+        }
+        return this.moves.toArray(new int[0][]); // Passa possiveís jogadas	
+	}
+	
+	public int[][] searchCaptures(int line, int column, JButton[][] board, Player owner){
+		/**
+		* @param Tabuleiro
+		* @param Dono das peças a serem capturadas
+		*/
+
+		if(line > 1 && this.direction == Direction.UP){
+			
+			if(column > 1 && (owner.contains(board[line-1][column-1].getIcon()) && board[line-2][column-2].getIcon() == null)){
+					this.moves.add(0, new int[]{line-2, column-2});
+					this.possibleCaptures.add(0, board[line-1][column-1]);
+			}
+			if(column < 6 && (owner.contains(board[line-1][column+1].getIcon()) && board[line-2][column+2].getIcon() == null)){
+					this.moves.add(1, new int[]{line-2, column+2});
+					this.possibleCaptures.add(1, board[line-1][column+1]);
+			}
+			
+		}
+		
+		if(line < 6  && this.direction == Direction.DOWN){	
+		
+			if(column > 1 && (owner.contains(board[line+1][column-1].getIcon()) && board[line+2][column-2].getIcon() == null)){
+				this.moves.add(2, new int[]{line+2, column-2});
+				this.possibleCaptures.add(2, board[line+1][column-1]);
+			}
+			if(column < 6 && (owner.contains(board[line+1][column+1].getIcon()) && board[line+2][column+2].getIcon() == null)){
+				this.moves.add(3, new int[]{line+2, column+2});
+				this.possibleCaptures.add(3, board[line+1][column+1]);
+			}
+			
+		}
+		return moves.toArray(new int[0][]);
+	}
+	
+	
 	public int[][] getMoves(){
 		// @return Array de todas as possíveis jogadas
 
@@ -107,26 +166,6 @@ public class Move{
 	public boolean isCapture(){
 		// @return Booleano de se a lista de capturas viáveis está preenchida
 		return this.possibleCaptures.size() > 0;
-	}
-	
-	public int[][] getMaxMoves(){
-		// @return Lista de jogadas mais longas possíveis
-
-		ArrayList<int[]> maxMoves = new ArrayList<>(); // Inicia lista
-		final int lineToMax = 7 - this.line; // Intervalo entre a posição da linha e o 7
-		final int columnToMax = 7 - this.column; // Intervalo entre a posição da coluna e o 7
-		
-		if(this.direction == Direction.UP){
-			maxMoves.add(this.line < this.column ? new int[]{0, this.column - this.line} : new int[]{this.line - this.column, 0}); // Movimenta na diagonal superior esquerda
-			maxMoves.add(this.line < columnToMax ? new int[]{0, this.column + this.line} : new int[]{this.line - columnToMax, 7}); // Moviemnta na diagonal superior direita
-		}
-		
-		if(this.direction == Direction.DOWN){
-			maxMoves.add(lineToMax < this.column ? new int[]{7, this.column - lineToMax} : new int[]{this.line + this.column, 0}); // Movimenta na diagonal inferior esquerda
-			maxMoves.add(lineToMax < columnToMax ? new int[]{7, this.column + lineToMax} : new int[]{this.line + columnToMax, 7}); // Moivmenta na diagonal inferior direita
-		}
-		
-		return maxMoves.toArray(new int[0][]);
 	}
 	
 	public int indexOf(int line, int column){

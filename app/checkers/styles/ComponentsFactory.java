@@ -1,19 +1,17 @@
 package app.checkers.styles;
 
 import javax.swing.JButton;
-import javax.swing.*;
-
 import java.awt.Color;
-import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import javax.swing.Icon;
 
 import app.checkers.components.*;
 
 public class ComponentsFactory{
-	private Color[] color = {Color.WHITE, Color.BLACK};
-	private Move move;
 	private final int LENGTH = 8;
 	protected JButton[][] board;
-    private ArrayList<JButton> possibleCaptures = new ArrayList<>();
+	private Color[] color = {Color.WHITE, Color.BLACK};
+	private Move move;
 
     public void createBoard(Player[] player){	 
 		/**
@@ -37,11 +35,18 @@ public class ComponentsFactory{
 								move = null; // Anula jogada
 								return;
 							}
+
 							
 							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
-							move.searchCaptures(this.board, player[1]);
 							
-							if(this.paintButtons(move.getMoves(), Color.GREEN) == 0 && this.paintButtons(move.searchPossibleMoves(), Color.GREEN) == 0){
+							if(player[0].isQueen(icon)){
+								move.searchMaxMoves();
+							}
+							else{
+								move.searchCaptures(this.board, player[1]);
+							}
+							
+							if(this.paintButtons(move.getMoves(), Color.YELLOW) == 0 && this.paintButtons(move.searchPossibleMoves(), Color.GREEN) == 0){
 									move = null;
 							}
 						
