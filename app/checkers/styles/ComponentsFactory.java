@@ -7,7 +7,7 @@ import javax.swing.Icon;
 
 import app.checkers.components.*;
 
-public class ComponentsFactory{
+class ComponentsFactory{
 	private final int LENGTH = 8;
 	protected JButton[][] board;
 	private Color[] color = {Color.WHITE, Color.BLACK};
@@ -62,7 +62,8 @@ public class ComponentsFactory{
 
 						move.moveTo(this.board[nLine][nColumn]); // Move peça para o argumento
 						move = null; // Anula manipulador
-						if(nLine == 0 || nLine == 7){
+						
+						if(player[0].isPromotable(nLine)){
 							this.board[nLine][nColumn].setIcon(player[0].getQueenIcon());
 						}
 						this.reverseArray(player); // Alterna jogador

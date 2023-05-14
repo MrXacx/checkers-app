@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 
-import app.checkers.components.Direction;
 import app.checkers.components.Player;
 import app.checkers.styles.LayoutFactory;
 
@@ -13,8 +12,8 @@ public class Core{
 	private static Player[] players = new Player[2];
 	
 	public static void main(String[] args){
-		players[0] =  new Player("RED", Direction.DOWN); // Inicia jogador das preças pretas
-		players[1] =  new Player("YELLOW", Direction.UP); // Inicia jogador das peças brancas
+		players[0] =  new Player("RED", 7); // Inicia jogador das preças pretas
+		players[1] =  new Player("YELLOW", 0); // Inicia jogador das peças brancas
 
 		frame = new JFrame("Damas"); // Cria frame
 		
