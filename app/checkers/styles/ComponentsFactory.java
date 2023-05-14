@@ -30,44 +30,42 @@ class ComponentsFactory{
 					Icon icon = this.board[nLine][nColumn].getIcon();
 					
 					if(icon instanceof Icon && player[0].contains(icon)){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
-							if(move instanceof Move){ // Executa em caso de segundo clique indevido
-								this.paintButtons(move.getMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
-								move = null; // Anula jogada
-								return;
-							}
+						if(move instanceof Move){ // Executa em caso de segundo clique indevido
+							this.paintButtons(move.getMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+							move = null; // Anula jogada
+							return;
+						}
+						
+						move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
 
-							
-							move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
-							
-							
-							move.searchCaptures(this.board, player[1]);
-							
-							if(
-								this.paintButtons(move.getMoves(), Color.YELLOW) == 0 && 
-								this.paintButtons(
-									player[0].isQueen(icon) ? move.searchMaxMoves() : move.searchPossibleMoves(), 
-								Color.GREEN) == 0
-							){
-									move = null;
-							}
+
+						if(
+							this.paintButtons(move.searchCaptures(this.board, player[1]), Color.GREEN) == 0 && 
+							this.paintButtons(
+								player[0].isQueen(icon) ? move.searchMaxMoves() : move.searchPossibleMoves(), 
+							Color.GREEN) == 0
+						){
+							move = null;
+						}
 						
 					}
 					else if(move instanceof Move && move.contains(nLine, nColumn)){ // Executa se o botão for o segundo clique
 						this.paintButtons(move.getMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
+						move.moveTo(this.board[nLine][nColumn]); // Move peça para o argumento
 
 						if(move.isCapture()){ // Executa se alguma captura for possível
 							move.capture(move.indexOf(nLine, nColumn)); // realiza captura
-							player[1].decrementSquad(); // Decrementa plantel do adversário
+							player[1].decrementSquad(); // Decrementa plantel do adversário							
 						}
+										
+						if(!move.isCapture() || this.paintButtons(move.searchCaptures(nLine, nColumn, this.board, player[1]), Color.GREEN) == 0){
+							move = null; // Anula manipulador
+							if(player[0].isPromotable(nLine)){
+								this.board[nLine][nColumn].setIcon(player[0].getQueenIcon());
+							}
 
-						move.moveTo(this.board[nLine][nColumn]); // Move peça para o argumento
-						move = null; // Anula manipulador
-						
-						if(player[0].isPromotable(nLine)){
-							this.board[nLine][nColumn].setIcon(player[0].getQueenIcon());
+							this.reverseArray(player); // Alterna jogador
 						}
-						this.reverseArray(player); // Alterna jogador
-						
 					}
 					
 				});			

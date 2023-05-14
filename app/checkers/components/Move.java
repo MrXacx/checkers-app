@@ -1,7 +1,6 @@
 package app.checkers.components;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.swing.JButton;
 
@@ -68,23 +67,67 @@ public class Move{
 		
 		if(this.line > 1){		
 			if(this.column > 1 && (owner.contains(board[this.line-1][this.column-1].getIcon()) && board[this.line-2][this.column-2].getIcon() == null)){
-					this.moves.add(new int[]{this.line-2, this.column-2});
-					this.possibleCaptures.add(board[this.line-1][this.column-1]);
+				//this.searchCaptures(this.line-2, this.column-2, board, owner);
+				this.moves.add(new int[]{this.line-2, this.column-2});	
+				this.possibleCaptures.add(board[this.line-1][this.column-1]);
 			}
 			if(this.column < 6 && (owner.contains(board[line-1][this.column+1].getIcon()) && board[this.line-2][this.column+2].getIcon() == null)){
-					this.moves.add(new int[]{this.line-2, this.column+2});
-					this.possibleCaptures.add(board[this.line-1][this.column+1]);
+				//this.searchCaptures(this.line-2, this.column+2, board, owner);
+				this.moves.add(new int[]{this.line-2, this.column+2});
+				this.possibleCaptures.add(board[this.line-1][this.column+1]);
 			}			
 		}
 		
 		if(this.line < 6){			
 			if(this.column > 1 && (owner.contains(board[this.line+1][this.column-1].getIcon()) && board[this.line+2][this.column-2].getIcon() == null)){
+				//this.searchCaptures(this.line+2, this.column-2, board, owner);
 				this.moves.add(new int[]{this.line+2, this.column-2});
 				this.possibleCaptures.add(board[this.line+1][this.column-1]);
 			}
 			if(this.column < 6 && (owner.contains(board[this.line+1][this.column+1].getIcon()) && board[this.line+2][this.column+2].getIcon() == null)){
+				//this.searchCaptures(this.line+2, this.column+2, board, owner);
 				this.moves.add(new int[]{this.line+2, this.column+2});
 				this.possibleCaptures.add(board[this.line+1][this.column+1]);
+			}			
+		}
+		
+		return moves.toArray(new int[0][]);
+	}
+	
+	public int[][] searchCaptures(int zLine, int zColumn, JButton[][] board, Player owner){
+		/**
+		* @param Tabuleiro
+		* @param Dono das peças a serem capturadas
+		*/
+		this.moves.clear();
+		this.possibleCaptures.clear();
+		if(zLine > 1){		
+			if(zColumn > 1 && (owner.contains(board[zLine-1][zColumn-1].getIcon()) && board[zLine-2][zColumn-2].getIcon() == null)){
+				//this.searchCaptures(zLine-2, zColumn-2, board, owner);
+				
+				this.moves.add(new int[]{zLine-2, zColumn-2});
+				this.possibleCaptures.add(board[zLine-1][zColumn-1]);
+			}
+			if(zColumn < 6 && (owner.contains(board[line-1][zColumn+1].getIcon()) && board[zLine-2][zColumn+2].getIcon() == null)){
+				//this.searchCaptures(zLine-2, zColumn+2, board, owner);
+				
+				this.moves.add(new int[]{zLine-2, zColumn+2});
+				this.possibleCaptures.add(board[zLine-1][zColumn+1]);
+			}			
+		}
+		
+		if(zLine < 6){			
+			if(zColumn > 1 && (owner.contains(board[zLine+1][zColumn-1].getIcon()) && board[zLine+2][zColumn-2].getIcon() == null)){
+				//this.searchCaptures(zLine+2, zColumn-2, board, owner);
+				
+				this.moves.add(new int[]{zLine+2, zColumn-2});
+				this.possibleCaptures.add(board[zLine+1][zColumn-1]);
+			}
+			if(zColumn < 6 && (owner.contains(board[zLine+1][zColumn+1].getIcon()) && board[zLine+2][zColumn+2].getIcon() == null)){
+				//this.searchCaptures(zLine+2, zColumn+2, board, owner);
+				
+				this.moves.add(new int[]{zLine+2, zColumn+2});
+				this.possibleCaptures.add(board[zLine+1][zColumn+1]);
 			}			
 		}
 		
@@ -156,9 +199,10 @@ public class Move{
 	
 	public void moveTo(JButton end){
 		// @param Botão de destino da imagem
-
+		
 		end.setIcon(this.origin.getIcon()); // Adiciona imagem no botão de destion
 		this.origin.setIcon(null); // Retira imagem do botão de origem
+		this.origin = end;
 	}
 	
 	public void capture(int index){
