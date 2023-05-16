@@ -6,6 +6,8 @@ import javax.swing.JComponent;
 // Classes de layout
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Group;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
 
 
 public class LayoutFactory extends ComponentsFactory{
@@ -33,8 +35,8 @@ public class LayoutFactory extends ComponentsFactory{
     	/**
     	* @param layout do JPanel principal
     	*/
-    	var parallelGroup = layout.createParallelGroup(GroupLayout.Alignment.LEADING); // Adiciona grupo paralelo
-    	var sequentialGroup = 	layout.createSequentialGroup();  // Adiciona grupo sequencial
+    	ParallelGroup parallelGroup = layout.createParallelGroup(GroupLayout.Alignment.LEADING); // Adiciona grupo paralelo
+    	SequentialGroup sequentialGroup = 	layout.createSequentialGroup();  // Adiciona grupo sequencial
     	
     	for(JComponent[] line : this.board){ // IItera array
     		parallelGroup = parallelGroup.addGroup(this.alignComponents(layout.createSequentialGroup(), line));  // Alinha componentes da linha em relação aos componentes

@@ -2,6 +2,8 @@ package app.checkers.styles;
 
 import javax.swing.JButton;
 import java.awt.Color;
+import java.util.Arrays;
+
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 
@@ -10,9 +12,64 @@ import app.checkers.components.*;
 class ComponentsFactory{
 	private final int LENGTH = 8;
 	protected JButton[][] board;
-	private Color[] color = {Color.WHITE, Color.BLACK};
+	private Color special = Color.decode("#85f785"); 
+	private Color[] color = {Color.decode("#000000"), Color.decode("#FFFFFF")};
 	private Move move;
+	
+	public void triggerEvent(int nLine, int nColumn, Player[] player){
+		Icon icon = this.board[nLine][nColumn].getIcon();
+					
+		if(icon instanceof Icon && player[0].contains(icon)){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
+			if(move instanceof Move){ // Executa em caso de segundo clique indevido
+				this.paintButtons(move.getMoves(), this.color[0]); // Faz botões da lista voltarem ao padrão
+				move = null; // Anula jogada
+				return;
+			}
+			
+			move = new Move(this.board[nLine][nColumn], nLine, nColumn); // Inicia jogada no botão de origem
 
+			if(this.paintButtons(move.fetchCaptures(this.board, player[1]), this.special) == 0 && 
+				this.paintButtons(player[0].isQueen(icon) ? move.fetchMaxMoves(this.board) : move.fetchPossibleMoves(player[0].getDirection()), this.special) == 0){
+				move = null;
+			}
+			
+		}
+		else if(this.board[nLine][nColumn].getIcon() == null && (move instanceof Move && move.contains(nLine, nColumn))){ // Executa se o botão for o segundo clique
+			int countSquares = 0;
+
+			while(true){
+				this.paintButtons(move.getMoves(), this.color[0]); // Faz botões da lista voltarem ao padrão
+				
+				move.moveTo(this.board[nLine][nColumn], nLine, nColumn); // Move peça para a posição selecionada
+				if(!move.isCapture()){ // Executa se não houver captura									
+					break;					
+				}
+				
+				move.capture(move.indexOf(nLine, nColumn)); // realiza captura
+				player[1].decrementSquad(); // Decrementa plantel do adversário
+				
+				countSquares = this.paintButtons(move.fetchCaptures(this.board, player[1]), this.special);			
+				if(countSquares != 1){
+					break;
+				}
+				
+				nLine = move.getMoves()[0][0];
+				nColumn = move.getMoves()[0][1];						
+			}
+
+			if(countSquares == 0 || !move.isCapture()){ // Executa se não houver captura								
+				move = null; // Finaliza manipulador
+				
+				if(player[0].isPromotable(nLine)){ // Executa se a éça estiver apta a tornar-se dama
+					this.board[nLine][nColumn].setIcon(player[0].getQueenIcon());
+				}						
+				this.reverseArray(player); // Alterna jogador
+
+			}
+		}
+	
+	}
+	
     public void createBoard(Player[] player){	 
 		/**
 		* @param Array de jogadores
@@ -23,68 +80,10 @@ class ComponentsFactory{
 		for(int line = 0; line < this.LENGTH; line++){
 			for(int column = 0; column < this.LENGTH; column++){ 			
 				this.board[line][column]  = styleButton(new JButton(), column%2); // Inicia botão
+				
 				final int nLine = line;
 				final int nColumn = column;
-
-				this.board[line][column].addActionListener(evt -> {
-					
-					
-					Icon icon = this.board[nLine][nColumn].getIcon();
-					
-					if(icon instanceof Icon && player[0].contains(icon)){ // Executa se houver um ícone do botão e a peça pertencer ao jogador da vez					
-						if(move instanceof Move){ // Executa em caso de segundo clique indevido
-							this.paintButtons(move.getMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
-							move = null; // Anula jogada
-							return;
-						}
-						
-						move = new Move(this.board[nLine][nColumn], nLine, nColumn, player[0].getDirection()); // Inicia jogada no botão de origem
-
-						if(this.paintButtons(move.searchCaptures(this.board, player[1]), Color.GREEN) == 0 && 
-							this.paintButtons(player[0].isQueen(icon) ? move.searchMaxMoves() : move.searchPossibleMoves(), Color.GREEN) == 0){
-							move = null;
-						}
-						
-					}
-					else if(move instanceof Move && move.contains(nLine, nColumn)){ // Executa se o botão for o segundo clique
-						int lin = nLine;
-						int col = nColumn;
-						
-						boolean teste;
-						int[][] x = move.getMoves();
-						do{
-							this.paintButtons(move.getMoves(), Color.WHITE); // Faz botões da lista voltarem ao padrão
-							move.moveTo(this.board[lin][col]); // Move peça para a posição selecionada
-
-							if(move.isCapture()){ // Executa se não houver captura								
-								move.capture(move.indexOf(lin, col)); // realiza captura
-								player[1].decrementSquad(); // Decrementa plantel do adversário	
-
-								
-								x = move.searchCaptures(lin, col, this.board, player[1]);
-								System.out.println(x.length);
-								teste = x.length == 1;
-								if(teste){
-									lin = x[0][0];
-									col = x[0][1];	
-									continue;							
-								}								
-							}
-							break;						
-
-						}while(this.paintButtons(move.searchCaptures(lin, col, this.board, player[1]), Color.GREEN) == 1);
-
-						if(!move.isCapture()){ // Executa se não houver captura								
-							move = null; // Finaliza manipulador
-							if(player[0].isPromotable(lin)){ // Executa se a éça estiver apta a tornar-se dama
-								this.board[lin][col].setIcon(player[0].getQueenIcon());
-							}
-							
-							this.reverseArray(player); // Alterna jogador
-
-						}
-					}
-				});			
+				this.board[line][column].addActionListener(evt -> this.triggerEvent(nLine, nColumn, player));			
 			}
 			this.reverseArray(this.color); // Inverte posições do array das cores
 		}
@@ -116,6 +115,7 @@ class ComponentsFactory{
 		 
 		button.setBackground (color[index]); // Define cor do background de acordo com o módulo
 		button.setFocusPainted(false); // Retira foco
+		button.setBorder(null); // Retira foco
 		return button;
 	}
 	

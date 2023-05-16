@@ -74,11 +74,5 @@ public class Player {
     public void decrementSquad(){
         this.numberOfPieces--; // Reduz número de peças em uma unidade
     }
-    
-    public void decrementSquad(int number){
-        /**
-         * @paran número de peças a ser decrementado
-         */
-        this.numberOfPieces -= number; // Reduz número de peças em em quantidade variada
-    }
+   
 }
