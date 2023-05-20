@@ -4,14 +4,17 @@ import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import java.awt.Image;
 
+import java.util.Arrays;
+import java.util.ArrayList;
+
 public class Player {
 
 	private String colorPiece;
     private ImageIcon pieceIcon, queenIcon; // Ícones de peça comum e de peça promovida
-    private int numberOfPieces = 12; // Total de peças que jogador possui
     private int promotionLine; // Linha em que a peça deve ser promovida
     private Direction direction; // Direção que as peças comuns devem seguir
-	
+	private ArrayList<int[]> squad = new ArrayList<>();
+
     public Player(String colorName, int promotionLine){
         /**
          * @param Nome da cor da peça
@@ -50,13 +53,43 @@ public class Player {
          */
 		return this.direction;
 	}
+	
+	private int indexOf(int[] position){
+		for(int index = 0; index < this.squad.size(); index++){
+			if(Arrays.equals(this.squad.get(index), position)){
+				return index;
+			}
+		}
+		return -1;
+	}
+	
+    public void add(int[] position){
+        this.squad.add(position);
+    }
 
-    public boolean contains(Icon genericPiece){
+    public void remove(int[] position){
+    	
+    	int index = this.indexOf(position);
+    	if(index > -1){
+    	 	this.squad.remove(index);
+    	}
+        
+   		
+    }
+
+    public void replace(int[] old, int[] replace){
+        int index = this.indexOf(old);
+    	if(index != -1){
+    	 	this.squad.set(index, replace);
+    	} 
+    }
+
+    public boolean contains(int[] position){
         /**
 		 * @param Ícone da peça clicada
 		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
-		 */
-        return genericPiece != null &&  (((ImageIcon) genericPiece).getDescription().equals(this.colorPiece) || ((ImageIcon) genericPiece).getDescription().equals(this.colorPiece+"_queen"));
+		 */ 
+        return this.indexOf(position) != -1;
     }
     
      public boolean isQueen(Icon genericPiece){
@@ -70,9 +103,4 @@ public class Player {
     public boolean isPromotable(int line){
     	return line == this.promotionLine;
     }
-
-    public void decrementSquad(){
-        this.numberOfPieces--; // Reduz número de peças em uma unidade
-    }
-   
 }

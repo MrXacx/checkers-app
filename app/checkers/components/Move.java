@@ -3,26 +3,29 @@ package app.checkers.components;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import javax.swing.JButton;
+
+import javax.swing.*;
 
 public class Move{
-
+	public static JButton[][] board;
 	private JButton origin; // Botão de origem do evento
 	private int line, column; // Coordenadas do botão
 	private List<int[]> possibleMoves = new ArrayList<>(); // Lista de jogadas viáveis
-	private List<JButton> possibleCaptures = new ArrayList<>(); // Lista de capturas viáveis
+	private List<int[]> possibleCaptures = new ArrayList<>(); // Lista de capturas viáveis
 
-	public Move(JButton square, int line, int column){
+	public Move(int line, int column){
 		/**
-		 * @param Botão de origem
 		 * @param Linha do objeto no array
 		 * @param Coluna do objeto na linha
 		 */
 		 
-		this.origin = square; // Define origem do evento
+		this.origin = board[line][column]; // Define origem do evento
 		this.line = line; // Define linha a do tabuleiro em que está o botão
 		this.column = column; // Define a coluna da linha em que está o botão
 		
+	}
+	public static void setBoard(JButton[][] checkerboard){
+		board = checkerboard;
 	}
 	public int[][] fetchPossibleMoves(Direction direction){
 		/**
@@ -60,9 +63,8 @@ public class Move{
 		}
 	}
 
-	public int[][] fetchCaptures(JButton[][] board, Player owner){
+	public int[][] fetchCaptures(Player owner){
 		/**
-		* @param Tabuleiro
 		* @param Dono das peças a serem capturadas
 		* @return Lista com todas as jogadas de captura
 		*/
@@ -72,36 +74,35 @@ public class Move{
 		
 		if(this.line > 1){
 			// Captura na diagonal superior esquerda
-			if(this.column > 1 && (owner.contains(board[this.line-1][this.column-1].getIcon()) && board[this.line-2][this.column-2].getIcon() == null)){
+			if(this.column > 1 && (owner.contains(new int[]{this.line-1,this.column-1}) && board[this.line-2][this.column-2].getIcon() == null)){
 				this.possibleMoves.add(new int[]{this.line-2, this.column-2});	
-				this.possibleCaptures.add(board[this.line-1][this.column-1]);
+				this.possibleCaptures.add(new int[]{this.line-1,this.column-1});
 			}		
 			// Captura na diagonal superior direita
-			if(this.column < 6 && (owner.contains(board[line-1][this.column+1].getIcon()) && board[this.line-2][this.column+2].getIcon() == null)){
+			if(this.column < 6 && (owner.contains(new int[]{line-1,this.column+1}) && board[this.line-2][this.column+2].getIcon() == null)){
 				this.possibleMoves.add(new int[]{this.line-2, this.column+2});
-				this.possibleCaptures.add(board[this.line-1][this.column+1]);
+				this.possibleCaptures.add(new int[]{this.line-1,this.column+1});
 			}			
 		}
 		
 		if(this.line < 6){
 			// Captura na diagonal inferior esquerda
-			if(this.column > 1 && (owner.contains(board[this.line+1][this.column-1].getIcon()) && board[this.line+2][this.column-2].getIcon() == null)){
+			if(this.column > 1 && (owner.contains(new int[]{this.line+1,this.column-1}) && board[this.line+2][this.column-2].getIcon() == null)){
 				this.possibleMoves.add(new int[]{this.line+2, this.column-2});
-				this.possibleCaptures.add(board[this.line+1][this.column-1]);
+				this.possibleCaptures.add(new int[]{this.line+1,this.column-1});
 			}
 			// Captura na diagonal inferior direita
-			if(this.column < 6 && (owner.contains(board[this.line+1][this.column+1].getIcon()) && board[this.line+2][this.column+2].getIcon() == null)){
+			if(this.column < 6 && (owner.contains(new int[]{this.line+1,this.column+1}) && board[this.line+2][this.column+2].getIcon() == null)){
 				this.possibleMoves.add(new int[]{this.line+2, this.column+2});
-				this.possibleCaptures.add(board[this.line+1][this.column+1]);
+				this.possibleCaptures.add(new int[]{this.line+1,this.column+1});
 			}			
 		}
 		
 		return possibleMoves.toArray(new int[0][]);
 	}
 	
-	public int[][] fetchMaxMoves(JButton[][] board){
+	public int[][] fetchMaxMoves(){
 		/**
-		* @param Tabuleiro
 		* @return Lista de jogadas mais longas possíveis
 		*/
 		int nLine, nColumn;
@@ -133,21 +134,24 @@ public class Move{
 		// @return Array de todas as possíveis jogadas
 		return this.possibleMoves.toArray(new int[0][]); // Passa possiveís jogadas	
 	}
+	public int[] getCapture(int index){
+		// @return Array de todas as possíveis jogadas
+		return this.possibleCaptures.get(index); // Passa possiveís jogadas	
+	}
 	
 	public boolean isCapture(){
 		// @return Booleano de se a lista de capturas viáveis está preenchida
 		return this.possibleCaptures.size() > 0;
 	}
 	
-	public int indexOf(int line, int column) throws IndexOutOfBoundsException{
+	public int indexOf(int[] position) throws IndexOutOfBoundsException{
 		/**
 		* @param Linha a ser procurada
 		* @param Colua a ser procurada
 		* @return Índice da coordenada na lista dejogadas viáveis
 		*/
-		int[] wanted = new int[]{line, column};
 		for(int index = 0; index < this.possibleMoves.size(); index++){
-			if(Arrays.equals(this.possibleMoves.get(index), wanted)){
+			if(Arrays.equals(this.possibleMoves.get(index), position)){
 				return index;
 			}
 		}
@@ -155,16 +159,15 @@ public class Move{
 		throw new IndexOutOfBoundsException(String.format("Não foi possível encontrar o índice de [%d, %d] entre as possíveis jogadas", line, column));
 	}
 
-	public boolean contains(int line, int column){
+	public boolean contains(int[] position){
 		/**
 		 * @param Linha do botão no array
 		 * @param Coluna do botão na linha
 		 * @return Booleano da existência dos argumentos no array de jogadas possíveis
 		 */
 		 
-		int[] wanted = new int[]{line, column};
 		for(int index = 0; index < this.possibleMoves.size(); index++){
-			if(Arrays.equals(this.possibleMoves.get(index), wanted)){
+			if(Arrays.equals(this.possibleMoves.get(index), position)){
 				return true;
 			}
 		}
@@ -172,13 +175,13 @@ public class Move{
 
 	}
 	
-	public void moveTo(JButton end, int lin, int col){
+	public void moveTo(int lin, int col){
 		// @param Botão de destino da imagem
 		
-		
-		end.setIcon(this.origin.getIcon()); // Adiciona imagem no botão de destion
+		board[lin][col].setIcon(this.origin.getIcon()); // Adiciona imagem no botão de destion
 		this.origin.setIcon(null); // Retira imagem do botão de origem
-		this.origin = end;
+
+		this.origin = board[lin][col];
 		this.line = lin;
 		this.column = col;
 	}
@@ -187,7 +190,8 @@ public class Move{
 		return new int[]{this.line, this.column};
 	}
 	
-	public void capture(int index){
-		this.possibleCaptures.get(index).setIcon(null); // Retira imagem do botão de origem
+	public void capture(int[] captured, Player owner){
+		owner.remove(captured); // Decrementa plantel do adversário
+		this.board[captured[0]][captured[1]].setIcon(null); // Retira imagem do botão de origem
 	}
 }
