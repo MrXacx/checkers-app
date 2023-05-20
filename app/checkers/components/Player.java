@@ -9,17 +9,19 @@ import java.util.ArrayList;
 
 public class Player {
 
-	private String colorPiece;
+	private String colorPiece; // Identificador da peça
     private ImageIcon pieceIcon, queenIcon; // Ícones de peça comum e de peça promovida
     private int promotionLine; // Linha em que a peça deve ser promovida
     private Direction direction; // Direção que as peças comuns devem seguir
-	private ArrayList<int[]> squad = new ArrayList<>();
+	private ArrayList<int[]> squad = new ArrayList<>(); // Posições das peças no tabuleiro
+	private ArrayList<int[]> playable = new ArrayList<>(); // Posições das peças aptas a capturar
 
     public Player(String colorName, int promotionLine){
         /**
          * @param Nome da cor da peça
-         * @param Direção original que as peças devem seguir
+         * @param Linha de promoção da peça
          */
+         
          this.colorPiece = colorName;
          
         this.pieceIcon = new ImageIcon(new ImageIcon(("../src/"+colorName+"_PIECE.png")).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)); 
@@ -30,55 +32,64 @@ public class Player {
         
         this.promotionLine = promotionLine;
         this.direction = promotionLine == 0 ? Direction.UP : Direction.DOWN;
-        
     }
 
 	public ImageIcon getIcon(){
-        /**
-         * @return Ícone da peça comum
-         */
+        // @return Ícone da peça comum
 		return this.pieceIcon;
 	}
 
     public ImageIcon getQueenIcon(){
-        /**
-         * @return Ícone da peça comum
-         */
+        // @return Ícone da peça promovida
 		return this.queenIcon;
 	}
 
     public Direction getDirection(){
-        /**
-         * @return Direção que a peça deve seguir
-         */
+        // @return Direção que a peça deve seguir
 		return this.direction;
 	}
-	
-	private int indexOf(int[] position){
-		for(int index = 0; index < this.squad.size(); index++){
-			if(Arrays.equals(this.squad.get(index), position)){
+	public ArrayList<int[]> getCordinates(){
+        // @return Lista das posições de todas as peças
+		return this.squad;
+	}
+
+	private int indexOf(int[] position, ArrayList<int[]> list){
+		/**
+		* @param Posição a ser procurada
+		* @param Lista em que a posição deve ser procurada
+		* @return Índice da posição na lista ou -1 em caso de ausência
+		*/
+		
+		for(int index = 0; index < list.size(); index++){
+			if(Arrays.equals(list.get(index), position)){
 				return index;
 			}
 		}
 		return -1;
 	}
 	
-    public void add(int[] position){
+    public void appendCoordinate(int[] position){
         this.squad.add(position);
+        this.playable.add(position);
     }
-
-    public void remove(int[] position){
+	
+	public void appendPlayble(int[] position){
+		this.playable.add(position);
+	}
+	public void clearPlayable(){
+		this.playable.clear();
+	}
+    public void removeCoordinate(int[] position){
     	
-    	int index = this.indexOf(position);
+    	int index = this.indexOf(position, squad);
     	if(index > -1){
     	 	this.squad.remove(index);
     	}
         
-   		
     }
 
-    public void replace(int[] old, int[] replace){
-        int index = this.indexOf(old);
+    public void updateCoordinate(int[] old, int[] replace){
+        int index = this.indexOf(old, squad);
     	if(index != -1){
     	 	this.squad.set(index, replace);
     	} 
@@ -89,7 +100,7 @@ public class Player {
 		 * @param Ícone da peça clicada
 		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
 		 */ 
-        return this.indexOf(position) != -1;
+        return this.indexOf(position, squad) != -1;
     }
     
      public boolean isQueen(Icon genericPiece){
@@ -102,5 +113,10 @@ public class Player {
     
     public boolean isPromotable(int line){
     	return line == this.promotionLine;
+    }
+    
+    public boolean isPlayable(int[] position){
+
+    	return playable.size() == 0 || this.indexOf(position, playable) != -1;
     }
 }
