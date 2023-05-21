@@ -190,6 +190,6 @@ public class Move{
 	
 	public void capture(int[] captured, Player owner){
 		owner.removeCoordinate(captured); // Decrementa plantel do adversário
-		this.board[captured[0]][captured[1]].setIcon(null); // Retira imagem do botão de origem
+		board[captured[0]][captured[1]].setIcon(null); // Retira imagem do botão de origem
 	}
 }

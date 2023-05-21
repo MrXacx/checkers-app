@@ -15,10 +15,11 @@ class ComponentsFactory{
 	private Color[] color = {Color.decode("#000000"), Color.decode("#FFFFFF")}; // Tema do tabuleiro
 	private Move move; // Manipulador de movimento
 	private int[] previousClick; // Clique anterior
+	private Player[] player;
 	
-    public void createBoard(Player[] player){	 
+    public void createBoard(Player[] players){	 
 		// @param Array de jogadores	
-		
+		player = players;
     	this.board  = new JButton[this.LENGTH][this.LENGTH];
 		
 		for(int line = 0; line < this.LENGTH; line++){
@@ -27,7 +28,7 @@ class ComponentsFactory{
 				
 				final int clonedLine = line;
 				final int clonedColumn = column;
-				this.board[line][column].addActionListener(evt -> this.triggerEvent(clonedLine, clonedColumn, player));			
+				this.board[line][column].addActionListener(evt -> this.triggerEvent(clonedLine, clonedColumn));			
 			}
 			this.reverseArray(this.color); // Inverte posições do array das cores
 		}
@@ -51,9 +52,9 @@ class ComponentsFactory{
 		return button;
 	}
 	
-	public void triggerEvent(int clonedLine, int clonedColumn, Player[] player){
+	public void triggerEvent(int clonedLine, int clonedColumn){
 		/**
-		*	@param Linha em que o botão foi acionado
+		* @param Linha em que o botão foi acionado
 		* @param Coluna em que o botão foi acionado
 		* @param Array de jogadores
 		*/
@@ -113,18 +114,18 @@ class ComponentsFactory{
 				if(player[0].isPromotable(clonedLine)){ // Executa se a éça estiver apta a tornar-se dama
 					this.board[clonedLine][clonedColumn].setIcon(player[0].getQueenIcon());
 				}
-				
 				this.reverseArray(player); // Alterna jogador
-				
 				player[0].clearPlayable(); // Limpa lista que podem capturar
 				player[0].getCordinates().forEach( piece -> { // Analisa todas as peças em busca de capturas
 					Move nMove = new Move(piece[0], piece[1]);
 					if(nMove.fetchCaptures(player[1]).length != 0){
-						player[0].appendPlayble(piece); // Insere peça lista
+						player[1].appendPlayble(piece); // Insere peça lista
 					}
 				});
-			}
 
+				
+
+			}
 		}
 	}
 	

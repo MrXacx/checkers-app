@@ -7,16 +7,16 @@ import java.awt.Image;
 import java.util.Arrays;
 import java.util.ArrayList;
 
-public class Player {
+public class Player{
 
 	private String colorPiece; // Identificador da peça
     private ImageIcon pieceIcon, queenIcon; // Ícones de peça comum e de peça promovida
-    private int promotionLine; // Linha em que a peça deve ser promovida
+    private int promotiolin; // Linha em que a peça deve ser promovida
     private Direction direction; // Direção que as peças comuns devem seguir
 	private ArrayList<int[]> squad = new ArrayList<>(); // Posições das peças no tabuleiro
 	private ArrayList<int[]> playable = new ArrayList<>(); // Posições das peças aptas a capturar
 
-    public Player(String colorName, int promotionLine){
+    public Player(String colorName, int promotiolin){
         /**
          * @param Nome da cor da peça
          * @param Linha de promoção da peça
@@ -30,8 +30,8 @@ public class Player {
         this.queenIcon = new ImageIcon(new ImageIcon("../src/dama.png").getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
         this.queenIcon .setDescription(this.colorPiece+"_queen");
         
-        this.promotionLine = promotionLine;
-        this.direction = promotionLine == 0 ? Direction.UP : Direction.DOWN;
+        this.promotiolin = promotiolin;
+        this.direction = promotiolin == 0 ? Direction.UP : Direction.DOWN;
     }
 
 	public ImageIcon getIcon(){
@@ -48,6 +48,7 @@ public class Player {
         // @return Direção que a peça deve seguir
 		return this.direction;
 	}
+	
 	public ArrayList<int[]> getCordinates(){
         // @return Lista das posições de todas as peças
 		return this.squad;
@@ -76,23 +77,23 @@ public class Player {
 	public void appendPlayble(int[] position){
 		this.playable.add(position);
 	}
+	
 	public void clearPlayable(){
 		this.playable.clear();
 	}
-    public void removeCoordinate(int[] position){
-    	
+    
+	public void removeCoordinate(int[] position){	
     	int index = this.indexOf(position, squad);
     	if(index > -1){
     	 	this.squad.remove(index);
-    	}
-        
+    	}        
     }
 
     public void updateCoordinate(int[] old, int[] replace){
-        int index = this.indexOf(old, squad);
+		int index = this.indexOf(old, squad);
     	if(index != -1){
     	 	this.squad.set(index, replace);
-    	} 
+    	}
     }
 
     public boolean contains(int[] position){
@@ -112,11 +113,10 @@ public class Player {
     }
     
     public boolean isPromotable(int line){
-    	return line == this.promotionLine;
+    	return line == this.promotiolin;
     }
     
     public boolean isPlayable(int[] position){
-
-    	return playable.size() == 0 || this.indexOf(position, playable) != -1;
+    	return this.contains(position) && (playable.size() == 0 || this.indexOf(position, playable) != -1);
     }
 }
