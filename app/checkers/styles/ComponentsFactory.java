@@ -2,6 +2,7 @@ package app.checkers.styles;
 
 import javax.swing.JButton;
 import java.awt.Color;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
@@ -10,7 +11,7 @@ import app.checkers.components.*;
 
 class ComponentsFactory{
 	private final int LENGTH = 8; // Dimensão base do tabuleiro
-	protected JButton[][] board; // tabuleiro
+	public JButton[][] board; // tabuleiro
 	private Color special = Color.decode("#85f785");  // Cor de ênfase
 	private Color[] color = {Color.decode("#000000"), Color.decode("#FFFFFF")}; // Tema do tabuleiro
 	private Move move; // Manipulador de movimento
@@ -74,7 +75,7 @@ class ComponentsFactory{
 			previousClick = position; // Guarda posição para operações futuras
 			
 			if(this.paintButtons(move.fetchCaptures(player[1]), this.special) == 0 && // Testa possíveis capturas
-				this.paintButtons(player[0].isQueen(icon) ? move.fetchMaxMoves() : move.fetchPossibleMoves(player[0].getDirection()), this.special) == 0){ // Testa movimentação
+				this.paintButtons(move.fetchPossibleMoves(player[0].isQueen(icon) ? Direction.ALL : player[0].getDirection()), this.special) == 0){ // Testa movimentação
 				// Executa se a peça não houver como mover a peça
 				move = null; // Anula jogada
 				previousClick = null; // Anula clique anterior
@@ -93,8 +94,8 @@ class ComponentsFactory{
 				if(!move.isCapture()){ // Executa se não houver captura									
 					break;					
 				}
-				
-				int[] captured = move.getCapture(move.indexOf(position)); // Obtém posição da peça capturada
+				int index = move.indexOf(position);
+				int[] captured = move.getCapture(index); // Obtém posição da peça capturada
 				move.capture(captured, player[1]); // Retira peça
 				moveCount = this.paintButtons(move.fetchCaptures(player[1]), this.special);	// Obtém número de quadrados de possíveis jogadas
 				
@@ -119,16 +120,29 @@ class ComponentsFactory{
 				player[0].getCordinates().forEach( piece -> { // Analisa todas as peças em busca de capturas
 					Move nMove = new Move(piece[0], piece[1]);
 					if(nMove.fetchCaptures(player[1]).length != 0){
-						player[1].appendPlayble(piece); // Insere peça lista
+						player[0].appendPlayble(piece); // Insere peça lista
+					}
+					else if(nMove.fetchPossibleMoves(player[0].isQueen(icon) ? Direction.ALL : player[0].getDirection()).length == 0){
+						player[0].appendBlocked(piece); // Insere peça lista
 					}
 				});
-
-				
-
+				if(player[0].isLoser()){
+					app.checkers.Core.stop(player[1].getUpperColor() + "S  VENCEM!");
+					this.disableBoard();
+				}
+				else{
+					player[0].clearBlocked();
+				}
 			}
 		}
 	}
 	
+	public void disableBoard(){
+		for(JButton[] lin : board){
+			Arrays.asList(lin).forEach(button -> {button.setEnabled(false);});
+		}
+	}
+
 	private int paintButtons(int[][] positions, Color color){
 		/**
 		 * @param Array com as posições dos botões a serem pintados

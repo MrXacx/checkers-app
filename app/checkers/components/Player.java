@@ -15,6 +15,8 @@ public class Player{
     private Direction direction; // Direção que as peças comuns devem seguir
 	private ArrayList<int[]> squad = new ArrayList<>(); // Posições das peças no tabuleiro
 	private ArrayList<int[]> playable = new ArrayList<>(); // Posições das peças aptas a capturar
+	private ArrayList<int[]> blocked = new ArrayList<>(); // Posições das peças aptas a capturar
+
 
     public Player(String colorName, int promotiolin){
         /**
@@ -27,7 +29,7 @@ public class Player{
         this.pieceIcon = new ImageIcon(new ImageIcon(("../src/"+colorName+"_PIECE.png")).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)); 
         this.pieceIcon.setDescription(this.colorPiece);
         
-        this.queenIcon = new ImageIcon(new ImageIcon("../src/dama.png").getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
+        this.queenIcon = new ImageIcon(new ImageIcon("../src/"+colorName+"_QUEEN.png").getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
         this.queenIcon .setDescription(this.colorPiece+"_queen");
         
         this.promotiolin = promotiolin;
@@ -37,6 +39,11 @@ public class Player{
 	public ImageIcon getIcon(){
         // @return Ícone da peça comum
 		return this.pieceIcon;
+	}
+
+	public String getUpperColor(){
+        // @return Ícone da peça comum
+		return this.colorPiece.toUpperCase();
 	}
 
     public ImageIcon getQueenIcon(){
@@ -77,6 +84,14 @@ public class Player{
 	public void appendPlayble(int[] position){
 		this.playable.add(position);
 	}
+
+	public void appendBlocked(int[] position){
+		this.blocked.add(position);
+	}
+
+	public void clearBlocked(){
+		this.blocked.clear();
+	}
 	
 	public void clearPlayable(){
 		this.playable.clear();
@@ -104,7 +119,15 @@ public class Player{
         return this.indexOf(position, squad) != -1;
     }
     
-     public boolean isQueen(Icon genericPiece){
+	public boolean isLoser(){
+        /**
+		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
+		 */
+		int n = this.squad.size();
+        return n == 0 || n == this.blocked.size();
+    }
+
+	public boolean isQueen(Icon genericPiece){
         /**
 		 * @param Ícone da peça clicada
 		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
@@ -116,7 +139,8 @@ public class Player{
     	return line == this.promotiolin;
     }
     
-    public boolean isPlayable(int[] position){
-    	return this.contains(position) && (playable.size() == 0 || this.indexOf(position, playable) != -1);
+    public boolean isPlayable(int[] position){		
+    	return (this.contains(position) && playable.size() == 0) || this.indexOf(position, playable) != -1;
     }
+
 }

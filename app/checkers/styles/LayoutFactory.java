@@ -15,6 +15,8 @@ public class LayoutFactory extends ComponentsFactory{
 	
 	private final int SIZE = 80; // Tamanho dos componentes alinhados genericamente
 	
+
+
 	public void setLayout(GroupLayout layout){
 		this.layout = layout;
 	}

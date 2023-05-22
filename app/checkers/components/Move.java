@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Arrays;
 
 import javax.swing.JButton;
-import javax.swing.Icon;
 
 public class Move{
 	public static JButton[][] board; // Tabuleiro
@@ -35,21 +34,22 @@ public class Move{
 		 * @return Array de todas os movimentos simples possíveis
 		 */
 		
-		if(this.line > 0 && direction == Direction.UP ){ // Executa se o botão estiver estiver numa linha superior ao índice 0 e subindo
+		if(this.line > 0 && (direction == Direction.UP || direction == Direction.ALL)){ // Executa se o botão estiver estiver numa linha superior ao índice 0 e subindo
 			if(this.column > 0){
-			this.possibleMoves.add(new int[]{this.line-1, this.column-1}); // Canto superior esquerdo
+				this.possibleMoves.add(new int[]{this.line-1, this.column-1}); // Canto superior esquerdo
+			}
+			if(this.column < 7){
+				this.possibleMoves.add(new int[]{this.line-1, this.column+1}); // Canto superior direiro
+			}
 		}
-		if(this.column < 7){
-			this.possibleMoves.add(new int[]{this.line-1, this.column+1}); // Canto superior direiro
-		}
-		}
-		else if(this.line < 7 && direction == Direction.DOWN){ // Executa se o botão estiver estiver numa linha inferior ao índice 7 e descendo
+		
+		if(this.line < 7 && (direction == Direction.DOWN || direction == Direction.ALL)){ // Executa se o botão estiver estiver numa linha inferior ao índice 7 e descendo
 			if(this.column > 0){
-			this.possibleMoves.add(new int[]{this.line+1, this.column-1}); // Canto inferior esquerdo
-		}
-		if(this.column < 7){
-			this.possibleMoves.add(new int[]{this.line+1, this.column+1}); // Canto inferior direito
-		}
+				this.possibleMoves.add(new int[]{this.line+1, this.column-1}); // Canto inferior esquerdo
+			}
+			if(this.column < 7){
+				this.possibleMoves.add(new int[]{this.line+1, this.column+1}); // Canto inferior direito
+			}
 		}
 		
 		return this.possibleMoves.toArray(new int[0][]); // Passa possiveís jogadas	
@@ -93,40 +93,12 @@ public class Move{
 		return possibleMoves.toArray(new int[0][]);
 	}
 	
-	public int[][] fetchMaxMoves(){
-		/**
-		* @return Lista de jogadas mais longas possíveis
-		*/
-		int clonedLine, nColumn;
-		
-		 // Verificar movimento na diagonal superior esquerda
-        for (clonedLine = line - 1, nColumn = column - 1; (clonedLine >= 0 && nColumn >= 0) && board[clonedLine][nColumn].getIcon() == null; clonedLine--, nColumn--) {
-            possibleMoves.add(new int[]{clonedLine, nColumn});
-        }
-
-        // Verificar movimento na diagonal superior direita
-        for (clonedLine = line - 1, nColumn = column + 1; (clonedLine >= 0 && nColumn < 8) && board[clonedLine][nColumn].getIcon() == null; clonedLine--, nColumn++) {
-            possibleMoves.add(new int[]{clonedLine, nColumn});
-        }
-
-        // Verificar movimento na diagonal inferior esquerda
-        for (clonedLine = line + 1, nColumn = column - 1; (clonedLine < 8 && nColumn >= 0) && board[clonedLine][nColumn].getIcon() == null; clonedLine++, nColumn--) {
-            possibleMoves.add(new int[]{clonedLine, nColumn});
-        }
-
-        // Verificar movimento na diagonal inferior direita
-        for (clonedLine = line + 1, nColumn = column + 1; (clonedLine < 8 && nColumn < 8) && board[clonedLine][nColumn].getIcon() == null; clonedLine++, nColumn++) {
-            possibleMoves.add(new int[]{clonedLine, nColumn});
-       }
-        
-        return this.possibleMoves.toArray(new int[0][]);
-	}
-	
 	public int[][] getMoves(){
 		// @return Array de todas as possíveis jogadas
 		
 		return this.possibleMoves.toArray(new int[0][]); 
 	}
+	
 	public int[] getCapture(int index){
 		/**
 		* @param Índice da peça na lista de possíveis capturas
