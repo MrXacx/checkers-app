@@ -122,7 +122,7 @@ class ComponentsFactory{
 					if(nMove.fetchCaptures(player[1]).length != 0){
 						player[0].appendPlayble(piece); // Insere peça lista
 					}
-					else if(nMove.fetchPossibleMoves(player[0].isQueen(icon) ? Direction.ALL : player[0].getDirection()).length == 0){
+					else if(nMove.fetchPossibleMoves(player[0].isQueen(board[piece[0]][piece[1]].getIcon()) ? Direction.ALL : player[0].getDirection()).length == 0){
 						player[0].appendBlocked(piece); // Insere peça lista
 					}
 				});
