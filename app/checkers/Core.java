@@ -32,7 +32,7 @@ public class Core{
 		
 
 		frame = new JFrame("Damas"); // Cria frame
-		frame.setSize(615, 680); // Define dimensões
+		frame.setSize(655, 680); // Define dimensões
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Determina que encerramento do frame equivale ao encerramento do código
 		frame.setLocationRelativeTo(null); // Centraliza frame
 		frame.setResizable(false);//nao mexer na tela
