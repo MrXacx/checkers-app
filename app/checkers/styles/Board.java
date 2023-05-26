@@ -1,16 +1,25 @@
 package app.checkers.styles;
 
 import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JComponent;
 import java.awt.Color;
 import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Group;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
+
+
 import app.checkers.components.*;
 
-class ComponentsFactory{
+class Board extends JPanel{
 	private final int LENGTH = 8; // Dimensão base do tabuleiro
+	private final int SIZE = 80; // Tamanho dos componentes alinhados genericamente
 	public JButton[][] board; // tabuleiro
 	private Color special = Color.decode("#85f785");  // Cor de ênfase
 	private Color[] color = {Color.decode("#000000"), Color.decode("#FFFFFF")}; // Tema do tabuleiro
@@ -53,7 +62,7 @@ class ComponentsFactory{
 		return button;
 	}
 	
-	public void triggerEvent(int clonedLine, int clonedColumn){
+	private void triggerEvent(int clonedLine, int clonedColumn){
 		/**
 		* @param Linha em que o botão foi acionado
 		* @param Coluna em que o botão foi acionado
@@ -110,6 +119,7 @@ class ComponentsFactory{
 				clonedLine = position[0]; 
 				clonedColumn = position[1];					
 			}
+			
 			if(moveCount == 0 || !move.isCapture()){ // Executa se não houver jogada sequencial
 				move = null; // Finaliza manipulador		
 				if(player[0].isPromotable(clonedLine)){ // Executa se a éça estiver apta a tornar-se dama
@@ -117,15 +127,16 @@ class ComponentsFactory{
 				}
 				this.reverseArray(player); // Alterna jogador
 				player[0].clearPlayable(); // Limpa lista que podem capturar
-				player[0].getCordinates().forEach( piece -> { // Analisa todas as peças em busca de capturas
+				player[0].getCordinates().forEach(piece -> { // Analisa todas as peças em busca de capturas
 					Move nMove = new Move(piece[0], piece[1]);
 					if(nMove.fetchCaptures(player[1]).length != 0){
 						player[0].appendPlayble(piece); // Insere peça lista
 					}
-					else if(nMove.fetchPossibleMoves(player[0].isQueen(icon) ? Direction.ALL : player[0].getDirection()).length == 0){
+					else if(nMove.fetchPossibleMoves(player[0].isQueen(board[piece[0]][piece[1]].getIcon()) ? Direction.ALL : player[0].getDirection()).length == 0){
 						player[0].appendBlocked(piece); // Insere peça lista
 					}
 				});
+				
 				if(player[0].isLoser()){
 					app.checkers.Core.stop(player[1].getUpperColor() + "S  VENCEM!");
 					this.disableBoard();
@@ -184,5 +195,34 @@ class ComponentsFactory{
 			}
 		}
 	}
-
+	private Group alignComponents(Group group, JComponent[] componentList){	
+  		/**
+  		* @param Objeto do grupo em que os componentes devem ser alinhados
+  		* @param Array com os componentes a serem alinhados
+  		* @return Componentes alinhados no grupo
+  		*/
+    	for(JComponent comp : componentList){ // Itera o array
+    		group = group.addComponent(comp, this.SIZE, this.SIZE, this.SIZE);  // Adiciona componente ao grupo
+		}
+    	return group;
+    }
+	
+	public void alignGroups(){
+    	/**
+    	* @param layout do JPanel principal
+    	*/
+    	GroupLayout layout = new GroupLayout(this);
+    	ParallelGroup verticalAlign = layout.createParallelGroup(GroupLayout.Alignment.LEADING); // Adiciona grupo paralelo
+    	SequentialGroup horizontalAlign =	layout.createSequentialGroup();  // Adiciona grupo sequencial
+    	
+    	for(JComponent[] line : this.board){ // IItera array
+    		verticalAlign = verticalAlign.addGroup(this.alignComponents(layout.createSequentialGroup(), line));  // Alinha componentes da linha em relação aos componentes
+    		horizontalAlign = horizontalAlign.addGroup(this.alignComponents(layout.createParallelGroup(GroupLayout.Alignment.BASELINE), line)); // Alinha componentes da linha em relação às outras linhas
+    	}   	
+    	
+    	layout.setHorizontalGroup(verticalAlign);  // Define alinhamento horizontal 	
+    	layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(horizontalAlign)); // Define alinhamento vertical
+    	
+    	this.setLayout(layout);
+    }
 }

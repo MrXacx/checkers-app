@@ -21,7 +21,8 @@ public class Core{
 	public static void main(String[] args){	
 		colors.add("RED");
 		colors.add("YELLOW");
-		new Menu();
+		start();
+		//new Menu();
 	}
 
 	public static void start(){
@@ -32,11 +33,11 @@ public class Core{
 		
 
 		frame = new JFrame("Damas"); // Cria frame
-		frame.setSize(615, 680); // Define dimensões
+		frame.setSize(875, 676); // Define dimensões
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Determina que encerramento do frame equivale ao encerramento do código
 		frame.setLocationRelativeTo(null); // Centraliza frame
 		frame.setResizable(false);//nao mexer na tela
-		frame.add(getLayout(new LayoutFactory())); // Adiciona tabuleiro ao frame
+		frame.add(getLayout(new LayoutFactory(players))); // Adiciona tabuleiro ao frame
 		frame.setVisible(true); // Torna frame visível
 	}
 	
@@ -45,13 +46,11 @@ public class Core{
 		* @param Instância do layout do tabuleiro
 		* @return panel com design do tabuleiro
 		*/
-		layout.createBoard(players); // Cria tabuleiro 8x8
 		panel = new JPanel();
 		GroupLayout container = new GroupLayout(panel); 
 		panel.setLayout(container); // Define o layout que o painel deve utilizar	
 		
-		layout.setLayout(container); // Define layout do painel
-		
+		layout.setLayout(container); // Define layout do painel	
 		layout.alignGroups(); // Define layout do painel		
 		return panel;
 	}

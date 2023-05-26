@@ -2,6 +2,7 @@ package app.checkers.styles;
 
 // Classe de componentes
 import javax.swing.JComponent;
+import  javax.swing.JPanel;
 
 // Classes de layout
 import javax.swing.GroupLayout;
@@ -9,44 +10,48 @@ import javax.swing.GroupLayout.Group;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 
+import app.checkers.styles.Menus;
+import app.checkers.components.Player;
 
-public class LayoutFactory extends ComponentsFactory{
+public class LayoutFactory{
 	private GroupLayout layout;
 	
-	private final int SIZE = 80; // Tamanho dos componentes alinhados genericamente
+	private Menus menu;
+	private Board board;
 	
-
+	public LayoutFactory(Player[] players){
+		board = new Board();
+		board.createBoard(players);
+		board.alignGroups();
+		menu = new Menus(/*board, players*/);
+		menu.alignGroups();
+	}
 
 	public void setLayout(GroupLayout layout){
 		this.layout = layout;
 	}
 	
-    private Group alignComponents(Group group, JComponent[] componentList){	
+    private Group alignComponents(Group group, JComponent[] componentList, int[] size){	
   		/**
   		* @param Objeto do grupo em que os componentes devem ser alinhados
   		* @param Array com os componentes a serem alinhados
   		* @return Componentes alinhados no grupo
   		*/
-    	for(JComponent comp : componentList){ // Itera o array
-    		group = group.addComponent(comp, this.SIZE, this.SIZE, this.SIZE);  // Adiciona componente ao grupo
+    	for(int index = 0; index < size.length; index++){ // Itera o array
+    		group = group.addComponent(componentList[index], size[index], size[index], size[index]);  // Adiciona componente ao grupo
 		}
     	return group;
     }
 	
 	public void alignGroups(){
-    	/**
-    	* @param layout do JPanel principal
-    	*/
-    	ParallelGroup parallelGroup = layout.createParallelGroup(GroupLayout.Alignment.LEADING); // Adiciona grupo paralelo
-    	SequentialGroup sequentialGroup = 	layout.createSequentialGroup();  // Adiciona grupo sequencial
+
+    	layout.setHorizontalGroup( // Define alinhamento horizontal
+    		layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(this.alignComponents(layout.createSequentialGroup(), new JPanel[]{this.board, this.menu}, new int[]{80*8, 80*3}))
+    	);  
     	
-    	for(JComponent[] line : this.board){ // IItera array
-    		parallelGroup = parallelGroup.addGroup(this.alignComponents(layout.createSequentialGroup(), line));  // Alinha componentes da linha em relação aos componentes
-    		sequentialGroup = sequentialGroup.addGroup(this.alignComponents(layout.createParallelGroup(GroupLayout.Alignment.BASELINE), line)); // Alinha componentes da linha em relação às outras linhas
-    	}   	
-    	
-    	layout.setHorizontalGroup(parallelGroup);  // Define alinhamento horizontal
-    	layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(sequentialGroup)); // Define alinhamento vertical
+    	layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup( // Define alinhamento vertical
+    		layout.createSequentialGroup().addGroup(this.alignComponents(layout.createParallelGroup(GroupLayout.Alignment.BASELINE), new JPanel[]{this.board, this.menu}, new int[]{80*8, 80*8}))
+    	));
     }
     
 }
