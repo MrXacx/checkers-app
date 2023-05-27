@@ -1,21 +1,12 @@
 package app.checkers.styles;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.awt.Color;
 import java.util.Arrays;
-
-import javax.swing.ImageIcon;
-import javax.swing.Icon;
-
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Group;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
-
+import javax.swing.GroupLayout.*;
 
 import app.checkers.components.*;
+import app.checkers.styles.LayoutFactory;
 
 class Board extends JPanel{
 	private final int LENGTH = 8; // Dimensão base do tabuleiro
@@ -24,7 +15,7 @@ class Board extends JPanel{
 	private Color special = Color.decode("#85f785");  // Cor de ênfase
 	private Color[] color = {Color.decode("#000000"), Color.decode("#FFFFFF")}; // Tema do tabuleiro
 	private Move move; // Manipulador de movimento
-	private int[] previousClick; // Clique anterior
+	private JButton previousClick; // Clique anterior
 	private Player[] player;
 	
     public void createBoard(Player[] players){	 
@@ -34,11 +25,13 @@ class Board extends JPanel{
 		
 		for(int line = 0; line < this.LENGTH; line++){
 			for(int column = 0; column < this.LENGTH; column++){ 			
-				this.board[line][column]  = styleButton(new JButton(), column%2); // Inicia botão
+				this.board[line][column]  = LayoutFactory.styleButton(new JButton(), color[column%2]); // Inicia botão
 				
 				final int clonedLine = line;
 				final int clonedColumn = column;
-				this.board[line][column].addActionListener(evt -> this.triggerEvent(clonedLine, clonedColumn));			
+				this.board[line][column].setName(line + "-" + column);
+				this.board[line][column].addActionListener(evt -> this.triggerEvent(clonedLine, clonedColumn));
+				
 			}
 			this.reverseArray(this.color); // Inverte posições do array das cores
 		}
@@ -49,18 +42,7 @@ class Board extends JPanel{
 		Move.setBoard(this.board); // Define tabuleiro a ser manipulado
 	}
 
-	private JButton styleButton(JButton button, int index){
-		/**
-		 * @param Botão a ser estilizado
-		 * @param Índice de cor do background
-		 * @return Botão estilizado
-		 */
-		 
-		button.setBackground (color[index]); // Define cor do background de acordo com o módulo
-		button.setFocusPainted(false); // Retira foco
-		button.setBorder(null); // Retira borda
-		return button;
-	}
+	
 	
 	private void triggerEvent(int clonedLine, int clonedColumn){
 		/**
@@ -69,8 +51,9 @@ class Board extends JPanel{
 		* @param Array de jogadores
 		*/
 		
-		int[] position = new int[]{clonedLine, clonedColumn}; // Armazena posição do botão
+		JButton position = this.board[clonedLine][clonedColumn]; // Armazena posição do botão
 		Icon icon = this.board[clonedLine][clonedColumn].getIcon(); // Armazena o ícone do botão
+		
 		if(icon instanceof Icon && player[0].isPlayable(position)){ // Executa se houver um ícone do botão e se a peça for jogável pelo atual jogadot				
 			
 			if(move instanceof Move){ // Executa em caso de segundo clique indevido
@@ -91,23 +74,24 @@ class Board extends JPanel{
 			}
 			
 		}
-		else if(this.board[clonedLine][clonedColumn].getIcon() == null && (move instanceof Move && move.contains(position))){ // Executa se um for um segundo clique válido
+		else if(this.board[clonedLine][clonedColumn].getIcon() == null && (move instanceof Move && move.contains(new int[]{clonedLine, clonedColumn}))){ // Executa se um for um segundo clique válido
 			int moveCount = 0; // Inicia contagem de possíveis jogadas sequenciais
 
 			while(true){
 				this.paintButtons(move.getMoves(), this.color[0]); // Faz botões da lista voltarem ao padrão
 				
-				move.moveTo(clonedLine, clonedColumn); // Move peça para a posição selecionada
+				move.moveTo(clonedLine, clonedColumn); // Move peça para a posição selecionada			
 				player[0].updateCoordinate(previousClick, position); // Informa jogador a nova posição
 				
 				if(!move.isCapture()){ // Executa se não houver captura									
 					break;					
 				}
-				int index = move.indexOf(position);
-				int[] captured = move.getCapture(index); // Obtém posição da peça capturada
-				move.capture(captured, player[1]); // Retira peça
-				moveCount = this.paintButtons(move.fetchCaptures(player[1]), this.special);	// Obtém número de quadrados de possíveis jogadas
+				int index = move.indexOf(new int[]{clonedLine, clonedColumn});
+				player[1].removeCoordinate(move.getCapture(index)); // Decrementa plantel do adversário
+				move.capture(index); // Retira peça
 				
+				move = new Move(clonedLine, clonedColumn);
+				moveCount = this.paintButtons(move.fetchCaptures(player[1]), this.special);	// Obtém número de quadrados de possíveis jogadas
 				if(moveCount != 1){ // Executa caso a jogada não seja óbvia ou não exista
 					break;
 				}
@@ -115,12 +99,12 @@ class Board extends JPanel{
 				previousClick = position; // Guarda posição para a próxima operação
 				
 				// Guarda nova posição
-				position = move.getMoves()[0]; 
-				clonedLine = position[0]; 
-				clonedColumn = position[1];					
+				clonedLine = move.getMoves()[0][0];
+				clonedColumn = move.getMoves()[0][1];
+				position = this.board[clonedLine][clonedColumn];
 			}
 			
-			if(moveCount == 0 || !move.isCapture()){ // Executa se não houver jogada sequencial
+			if(moveCount == 0){ // Executa se não houver jogada sequencial
 				move = null; // Finaliza manipulador		
 				if(player[0].isPromotable(clonedLine)){ // Executa se a éça estiver apta a tornar-se dama
 					this.board[clonedLine][clonedColumn].setIcon(player[0].getQueenIcon());
@@ -128,18 +112,22 @@ class Board extends JPanel{
 				this.reverseArray(player); // Alterna jogador
 				player[0].clearPlayable(); // Limpa lista que podem capturar
 				player[0].getCordinates().forEach(piece -> { // Analisa todas as peças em busca de capturas
-					Move nMove = new Move(piece[0], piece[1]);
+					String[] coordinate = piece.getName().split("-");
+					int auxLine = Integer.parseInt(coordinate[0]);
+					int auxColumn = Integer.parseInt(coordinate[1]);
+					
+					Move nMove = new Move(auxLine, auxColumn);
 					if(nMove.fetchCaptures(player[1]).length != 0){
 						player[0].appendPlayble(piece); // Insere peça lista
 					}
-					else if(nMove.fetchPossibleMoves(player[0].isQueen(board[piece[0]][piece[1]].getIcon()) ? Direction.ALL : player[0].getDirection()).length == 0){
+					else if(nMove.fetchPossibleMoves(player[0].isQueen(board[auxLine][auxColumn].getIcon()) ? Direction.ALL : player[0].getDirection()).length == 0){
 						player[0].appendBlocked(piece); // Insere peça lista
 					}
 				});
 				
 				if(player[0].isLoser()){
-					app.checkers.Core.stop(player[1].getUpperColor() + "S  VENCEM!");
 					this.disableBoard();
+					app.checkers.Core.stop(player[1].getUpperColor() + "S  VENCEM!");					
 				}
 				else{
 					player[0].clearBlocked();
@@ -186,12 +174,12 @@ class Board extends JPanel{
 		 * @param Índice inicial incluso na iteração
 		 * @param Íncide final excluso da iteração
 		 */
-		
+
 		// Itera tabuleiro em colunas alternadas
 		for(int line = fromIndex; line < toIndex; line++){
 			for(int column = line % 2; column < this.LENGTH; column += 2){
 				this.board[line][column].setIcon(owner.getIcon()); // Define ícone
-				owner.appendCoordinate(new int[]{line, column}); // Informa posição ao dono da peça
+				owner.appendCoordinate(this.board[line][column]); // Informa posição ao dono da peça
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package app.checkers.components;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import java.awt.Image;
+import javax.swing.JButton;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -13,9 +14,9 @@ public class Player{
     private ImageIcon pieceIcon, queenIcon; // Ícones de peça comum e de peça promovida
     private int promotiolin; // Linha em que a peça deve ser promovida
     private Direction direction; // Direção que as peças comuns devem seguir
-	private ArrayList<int[]> squad = new ArrayList<>(); // Posições das peças no tabuleiro
-	private ArrayList<int[]> playable = new ArrayList<>(); // Posições das peças aptas a capturar
-	private ArrayList<int[]> blocked = new ArrayList<>(); // Posições das peças aptas a capturar
+	private ArrayList<JButton> squad = new ArrayList<>(); // Posições das peças no tabuleiro
+	private ArrayList<JButton> playable = new ArrayList<>(); // Posições das peças aptas a capturar
+	private ArrayList<JButton> blocked = new ArrayList<>(); // Posições das peças aptas a capturar
 
 
     public Player(String colorName, int promotiolin){
@@ -26,10 +27,10 @@ public class Player{
          
          this.colorPiece = colorName;
          
-        this.pieceIcon = new ImageIcon(new ImageIcon(("../src/"+colorName+"_PIECE.png")).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH)); 
+        this.pieceIcon = new ImageIcon(new ImageIcon("../src/game/"+colorName+"_piece.png").getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH));
         this.pieceIcon.setDescription(this.colorPiece);
         
-        this.queenIcon = new ImageIcon(new ImageIcon("../src/"+colorName+"_QUEEN.png").getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
+        this.queenIcon = new ImageIcon(new ImageIcon("../src/game/"+colorName+"_queen.png").getImage().getScaledInstance(65, 65, Image.SCALE_SMOOTH));
         this.queenIcon .setDescription(this.colorPiece+"_queen");
         
         this.promotiolin = promotiolin;
@@ -39,6 +40,13 @@ public class Player{
 	public ImageIcon getIcon(){
         // @return Ícone da peça comum
 		return this.pieceIcon;
+	}
+	public ImageIcon getIcon(int size){
+        /**
+        * @param Dimensão do ícone
+        * @return Ícone da peça comum
+        */
+		return new ImageIcon(this.pieceIcon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
 	}
 
 	public String getUpperColor(){
@@ -56,12 +64,12 @@ public class Player{
 		return this.direction;
 	}
 	
-	public ArrayList<int[]> getCordinates(){
+	public ArrayList<JButton> getCordinates(){
         // @return Lista das posições de todas as peças
 		return this.squad;
 	}
 
-	private int indexOf(int[] position, ArrayList<int[]> list){
+	private int indexOf(JButton searched, ArrayList<JButton> list){
 		/**
 		* @param Posição a ser procurada
 		* @param Lista em que a posição deve ser procurada
@@ -69,24 +77,24 @@ public class Player{
 		*/
 		
 		for(int index = 0; index < list.size(); index++){
-			if(Arrays.equals(list.get(index), position)){
+			if(list.get(index).getName().equals(searched.getName())){
 				return index;
 			}
 		}
 		return -1;
 	}
 	
-    public void appendCoordinate(int[] position){
-        this.squad.add(position);
-        this.playable.add(position);
+    public void appendCoordinate(JButton button){
+        this.squad.add(button);
+        this.playable.add(button);
     }
 	
-	public void appendPlayble(int[] position){
-		this.playable.add(position);
+	public void appendPlayble(JButton button){
+		this.playable.add(button);
 	}
 
-	public void appendBlocked(int[] position){
-		this.blocked.add(position);
+	public void appendBlocked(JButton button){
+		this.blocked.add(button);
 	}
 
 	public void clearBlocked(){
@@ -97,26 +105,26 @@ public class Player{
 		this.playable.clear();
 	}
     
-	public void removeCoordinate(int[] position){	
-    	int index = this.indexOf(position, squad);
+	public void removeCoordinate(JButton button){	
+    	int index = this.indexOf(button, squad);
     	if(index > -1){
     	 	this.squad.remove(index);
-    	}        
-    }
-
-    public void updateCoordinate(int[] old, int[] replace){
-		int index = this.indexOf(old, squad);
-    	if(index != -1){
-    	 	this.squad.set(index, replace);
     	}
     }
 
-    public boolean contains(int[] position){
+    public void updateCoordinate(JButton old, JButton replace){
+		int index = this.indexOf(old, squad);
+    	if(index != -1){
+    	 	this.squad.set(index, replace);
+    	}    	
+    }
+
+    public boolean contains(JButton button){
         /**
 		 * @param Ícone da peça clicada
 		 * @return Booleano da equivalência entre a peça selecionada e as peças que o jogador possui
 		 */ 
-        return this.indexOf(position, squad) != -1;
+        return this.indexOf(button, squad) != -1;
     }
     
 	public boolean isLoser(){
@@ -139,8 +147,8 @@ public class Player{
     	return line == this.promotiolin;
     }
     
-    public boolean isPlayable(int[] position){		
-    	return (this.contains(position) && playable.size() == 0) || this.indexOf(position, playable) != -1;
+    public boolean isPlayable(JButton button){		
+    	return (this.contains(button) && playable.size() == 0) || this.indexOf(button, playable) != -1;
     }
 
 }

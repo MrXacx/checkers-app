@@ -1,15 +1,8 @@
 package app.checkers.styles;
 
-// Classe de componentes
-import javax.swing.JComponent;
-import  javax.swing.JPanel;
-
-// Classes de layout
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Group;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
-
+import javax.swing.*;
+import javax.swing.GroupLayout.*;
+import java.awt.Color;
 import app.checkers.styles.Menus;
 import app.checkers.components.Player;
 
@@ -23,10 +16,23 @@ public class LayoutFactory{
 		board = new Board();
 		board.createBoard(players);
 		board.alignGroups();
-		menu = new Menus(/*board, players*/);
+		menu = new Menus(board, players);
 		menu.alignGroups();
 	}
-
+	
+	public static JButton styleButton(JButton button, Color color){
+		/**
+		 * @param Botão a ser estilizado
+		 * @param Índice de cor do background
+		 * @return Botão estilizado
+		 */
+		 
+		button.setBackground(color); // Define cor do background de acordo com o módulo
+		button.setFocusPainted(false); // Retira foco
+		button.setBorder(null); // Retira borda
+		return button;
+	}
+	
 	public void setLayout(GroupLayout layout){
 		this.layout = layout;
 	}
