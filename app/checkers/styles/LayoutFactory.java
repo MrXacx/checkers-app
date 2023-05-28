@@ -3,7 +3,6 @@ package app.checkers.styles;
 import javax.swing.*;
 import javax.swing.GroupLayout.*;
 import java.awt.Color;
-import app.checkers.styles.Menus;
 import app.checkers.components.Player;
 
 public class LayoutFactory{
@@ -16,7 +15,7 @@ public class LayoutFactory{
 		board = new Board();
 		board.createBoard(players);
 		board.alignGroups();
-		menu = new Menus(board, players);
+		menu = new Menus(board, players[1], players[0]);
 		menu.alignGroups();
 	}
 	

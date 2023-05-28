@@ -6,7 +6,6 @@ import java.util.Arrays;
 import javax.swing.GroupLayout.*;
 
 import app.checkers.components.*;
-import app.checkers.styles.LayoutFactory;
 
 class Board extends JPanel{
 	private final int LENGTH = 8; // Dimensão base do tabuleiro
@@ -41,7 +40,14 @@ class Board extends JPanel{
 
 		Move.setBoard(this.board); // Define tabuleiro a ser manipulado
 	}
-
+	public void reset(){
+		for(JButton[] lin : board){
+			Arrays.asList(lin).forEach(button -> button.setIcon(null));
+		}
+		previousClick = null;
+		this.addPieces(player[0], 5, 8);  // Adicina peças do primeiro jogador
+		this.addPieces(player[1], 0, 3); // Adiciona peças do segundo jogador
+	}
 	
 	
 	private void triggerEvent(int clonedLine, int clonedColumn){
@@ -126,7 +132,7 @@ class Board extends JPanel{
 				});
 				
 				if(player[0].isLoser()){
-					this.disableBoard();
+					this.disable(true);
 					app.checkers.Core.stop(player[1].getUpperColor() + "S  VENCEM!");					
 				}
 				else{
@@ -136,9 +142,9 @@ class Board extends JPanel{
 		}
 	}
 	
-	public void disableBoard(){
+	public void disable(boolean turn){
 		for(JButton[] lin : board){
-			Arrays.asList(lin).forEach(button -> {button.setEnabled(false);});
+			Arrays.asList(lin).forEach(button -> {button.setEnabled(!turn);});
 		}
 	}
 

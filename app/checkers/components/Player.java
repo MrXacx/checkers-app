@@ -5,21 +5,22 @@ import javax.swing.Icon;
 import java.awt.Image;
 import javax.swing.JButton;
 
-import java.util.Arrays;
 import java.util.ArrayList;
-
+import app.checkers.styles.PlayerContainer;
 public class Player{
 
 	private String colorPiece; // Identificador da peça
     private ImageIcon pieceIcon, queenIcon; // Ícones de peça comum e de peça promovida
-    private int promotiolin; // Linha em que a peça deve ser promovida
+    private int promotionLine; // Linha em que a peça deve ser promovida
     private Direction direction; // Direção que as peças comuns devem seguir
 	private ArrayList<JButton> squad = new ArrayList<>(); // Posições das peças no tabuleiro
 	private ArrayList<JButton> playable = new ArrayList<>(); // Posições das peças aptas a capturar
 	private ArrayList<JButton> blocked = new ArrayList<>(); // Posições das peças aptas a capturar
+	private PlayerContainer container;
 
+	private int totalQueens = 0;
 
-    public Player(String colorName, int promotiolin){
+    public Player(String colorName, int promotionLine){
         /**
          * @param Nome da cor da peça
          * @param Linha de promoção da peça
@@ -33,14 +34,28 @@ public class Player{
         this.queenIcon = new ImageIcon(new ImageIcon("../src/game/"+colorName+"_queen.png").getImage().getScaledInstance(65, 65, Image.SCALE_SMOOTH));
         this.queenIcon .setDescription(this.colorPiece+"_queen");
         
-        this.promotiolin = promotiolin;
-        this.direction = promotiolin == 0 ? Direction.UP : Direction.DOWN;
+        this.promotionLine = promotionLine;
+        this.direction = promotionLine == 0 ? Direction.UP : Direction.DOWN;
     }
+
+	public void reset(){
+		this.squad.clear();
+		this.playable.clear();
+		this.blocked.clear();
+		totalQueens = 0;
+	}
+	public void setContainer (PlayerContainer playerContainer){
+		this.container = playerContainer;
+	}
+	public PlayerContainer getContainer (){
+		return this.container;
+	}
 
 	public ImageIcon getIcon(){
         // @return Ícone da peça comum
 		return this.pieceIcon;
 	}
+	
 	public ImageIcon getIcon(int size){
         /**
         * @param Dimensão do ícone
@@ -56,6 +71,7 @@ public class Player{
 
     public ImageIcon getQueenIcon(){
         // @return Ícone da peça promovida
+		this.container.updateDetails(this.squad.size(), ++this.totalQueens);
 		return this.queenIcon;
 	}
 
@@ -109,6 +125,7 @@ public class Player{
     	int index = this.indexOf(button, squad);
     	if(index > -1){
     	 	this.squad.remove(index);
+			this.container.updateDetails(this.squad.size(), this.isQueen(button.getIcon()) ? --this.totalQueens : this.totalQueens);
     	}
     }
 
@@ -144,7 +161,7 @@ public class Player{
     }
     
     public boolean isPromotable(int line){
-    	return line == this.promotiolin;
+    	return line == this.promotionLine;
     }
     
     public boolean isPlayable(JButton button){		

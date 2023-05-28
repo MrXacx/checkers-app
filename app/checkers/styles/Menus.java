@@ -10,13 +10,9 @@ class Menus extends JPanel {
 	 // Variables declaration - do not modify//GEN-BEGIN:variables
     
     private JPanel playerContainerDown;
-    private JLabel namePlayerDown = new JLabel();
-    private JLabel picPlayerDown = new JLabel();
-    
-    private JPanel playerContainerUp;
-    private JLabel picPlayerUp = new JLabel();
-    private JLabel namePlayerUp = new JLabel();
    
+    private JPanel playerContainerUp;
+    
     private JPanel timerContainer = new JPanel();
    
     private JPanel tools = new JPanel();
@@ -26,49 +22,20 @@ class Menus extends JPanel {
     
     // End of variables declaration//GEN-END:variables
     
-    public Menus(Board board, Player[] players) {
-		playerContainerUp = initContainer(new JPanel(), players[1], picPlayerUp, namePlayerUp);
-		playerContainerDown = initContainer(new JPanel(), players[0], picPlayerDown, namePlayerDown);
-		
+    public Menus(Board board, Player up, Player down) {
+
+		up.setContainer(new PlayerContainer(up));
+		down.setContainer(new PlayerContainer(down));
+			
+		playerContainerUp = up.getContainer();
+		playerContainerDown = down.getContainer();
+
 		initTimer();
-		initTools();
-      setSize(new java.awt.Dimension(240, 640));
+		initTools(board, up, down);
+      	setSize(240, 640);
     }
     
-    private JPanel initContainer(JPanel container, Player player, JLabel picBox, JLabel nameBox){
-    	container.setBackground(Color.decode("#a9966d"));
-		container.setSize(240, 160);	
-		
-		picBox.setIcon(player.getIcon(30));
-		nameBox.setText(player.getUpperColor());
-		
-		container.setLayout(settingPlayerContainer(new GroupLayout(container), picBox, nameBox));
-		
-		return container;
-    }
-    
-    private GroupLayout settingPlayerContainer(GroupLayout container, JLabel picPlayer, JLabel namePlayer){
-		
-		container.setHorizontalGroup(
-		    container.createParallelGroup(GroupLayout.Alignment.LEADING)
-		    .addGroup(GroupLayout.Alignment.TRAILING, container.createSequentialGroup()
-		        .addGap(8)
-		        .addComponent(picPlayer, 30, 30, 30)
-		        .addGap(8)
-		        .addComponent(namePlayer, 125, 125, 125)
-		        )
-		);
-		container.setVerticalGroup(
-		    container.createParallelGroup(GroupLayout.Alignment.LEADING)
-		    .addGroup(container.createSequentialGroup()
-		    	.addGap(15)
-		        .addGroup(container.createParallelGroup(GroupLayout.Alignment.TRAILING)
-		        	.addComponent(picPlayer, 30, 30, 30)
-		            .addComponent(namePlayer, 30, 30, 30)
-		            ))
-		);
-		return container;
-	}
+   
     
     
     
@@ -85,15 +52,15 @@ class Menus extends JPanel {
     	button.setIcon(new ImageIcon(new ImageIcon("../src/tools/"+name+".png").getImage().getScaledInstance(-1, 45, Image.SCALE_DEFAULT)));
     	return button;
     }
-    private void initTools(){
+    private void initTools(Board board, Player up, Player down){
 		tools.setSize(240, 80);
 		
 		pause = styleButton("pause");
 		pause.setSelected(false);
-		pause.addActionListener(evt -> pauseActionPerformed());
+		pause.addActionListener(evt -> pauseActionPerformed(board));
 
 		reset = styleButton("reset");
-		reset.addActionListener(evt -> resetActionPerformed());
+		reset.addActionListener(evt -> resetActionPerformed(board, up, down));
 
 		help = styleButton("help");
 		help.addActionListener(evt -> helpActionPerformed());
@@ -119,16 +86,23 @@ class Menus extends JPanel {
 		);
     }
     
-    private void pauseActionPerformed() {
+    private void pauseActionPerformed(Board board) {
 		if(pause.isSelected()){
-			pause.setIcon(new ImageIcon(new ImageIcon("../src/tools/pause.png").getImage().getScaledInstance(-1, 45, Image.SCALE_DEFAULT)));
+			pause.setIcon(new ImageIcon(new ImageIcon("../src/tools/pause.png").getImage().getScaledInstance(-1, 45, Image.SCALE_DEFAULT)));		
 		}
-		else{
+		else{			
 			pause.setIcon(new ImageIcon(new ImageIcon("../src/tools/resume.png").getImage().getScaledInstance(-1, 45, Image.SCALE_DEFAULT)));
 		}
+		board.disable(!pause.isSelected());
 		pause.setSelected(!pause.isSelected());
 	}
-    private void resetActionPerformed() {}
+    private void resetActionPerformed(Board board, Player up, Player down) {
+		if(JOptionPane.showConfirmDialog(board, "Tem certeza que deseja reiniciar a partida?", "Reiniciar partida", JOptionPane.YES_NO_OPTION, 1) == 0){
+			up.reset();
+			down.reset();
+			board.reset();
+		}
+	}
     
     private void helpActionPerformed() {
 		try {
