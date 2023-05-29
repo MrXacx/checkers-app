@@ -3,26 +3,27 @@ package app.checkers.styles;
 import javax.swing.*;
 import javax.swing.GroupLayout.*;
 import java.awt.Color;
-import app.checkers.components.Player;
+
+import app.checkers.services.Player;
+import app.checkers.styles.components.Board;
+import app.checkers.styles.components.Menus;
 
 public class LayoutFactory{
-	private GroupLayout layout;
-	
+	private GroupLayout layout;	
 	private Menus menu;
 	private Board board;
 	
 	public LayoutFactory(Player[] players){
-		board = new Board();
-		board.createBoard(players);
-		board.alignGroups();
-		menu = new Menus(board, players[1], players[0]);
-		menu.alignGroups();
+		// @param Array de jogadores
+		board = new Board(players); // Inicia tabuleiro
+		menu = new Menus(board, players[1], players[0]); // Inicia menu
+		board.alignGroups(); // Define alinhamento do tabuleiro
 	}
 	
 	public static JButton styleButton(JButton button, Color color){
 		/**
 		 * @param Botão a ser estilizado
-		 * @param Índice de cor do background
+		 * @param Cor do background
 		 * @return Botão estilizado
 		 */
 		 
@@ -33,6 +34,7 @@ public class LayoutFactory{
 	}
 	
 	public void setLayout(GroupLayout layout){
+		// @param Layout a ser estilizado
 		this.layout = layout;
 	}
 	

@@ -1,29 +1,44 @@
-package app.checkers.styles;
+package app.checkers.styles.components;
 
 import  javax.swing.*;
-import java.awt.Color;
 
-import app.checkers.components.Player;
+import app.checkers.services.Player;
+
+import java.awt.Color;
+import java.awt.Font;
 
 public class PlayerContainer extends JPanel {
 
-    
     private JLabel pic = new JLabel();
     private JLabel name = new JLabel();
 	private JLabel totalPieces = new JLabel();
 	private JLabel totalQueens = new JLabel();
+	private Font font = new Font("Arial", Font.PLAIN, 17);
+    
+    public PlayerContainer(Player player, Color textColor) {
+		/**
+		 * @param Dono do container
+		 * @param Cor a ser utilizada nos textos
+		 */
 
-    
-    // End of variables declaration//GEN-END:variables
-    
-    public PlayerContainer(Player player) {
-		this.setBackground(Color.decode("#a9966d"));
+		// Define cor do texto
+		name.setForeground(textColor);
+		totalPieces.setForeground(textColor);
+		totalQueens.setForeground(textColor);
+
+		// Define fonte
+		name.setFont(font);
+		totalPieces.setFont(font);
+		totalQueens.setFont(font);
+
 		this.setSize(240, 160);	
 		
+		// Identifica dono do container
 		pic.setIcon(player.getIcon(30));
 		name.setText(player.getUpperColor());
-		updateDetails(player.getCordinates().size(), 0);
-		this.setLayout(settingPlayerContainer(new GroupLayout(this)));
+
+		updateDetails(player.getCordinates().size(), 0); // Define informações do jogador
+		this.setLayout(settingPlayerContainer(new GroupLayout(this))); //Alinha components
 		
     }
 
@@ -32,29 +47,21 @@ public class PlayerContainer extends JPanel {
 		
 		container.setHorizontalGroup(
 		    container.createParallelGroup(GroupLayout.Alignment.LEADING)
+			
 		    .addGroup(GroupLayout.Alignment.TRAILING, container.createSequentialGroup()
-		        .addGap(8)
 		        .addComponent(pic, 30, 30, 30)
 		        .addGap(8)
 		        .addComponent(name, 125, 125, 125)
 		    )
-            .addGroup(GroupLayout.Alignment.TRAILING, container.createSequentialGroup()
-		        .addGap(8)
-		        .addComponent(totalPieces, 151, 151, 151)
-		        .addGap(8)
-		    )
-            .addGroup(GroupLayout.Alignment.TRAILING, container.createSequentialGroup()
-		        .addGap(8)
-		        .addComponent(totalQueens, 151, 151, 151)
-		        .addGap(8)
-		    )
+            .addComponent(totalPieces, 151, 151, 151)
+            .addComponent(totalQueens, 151, 151, 151)
 
             
 		);
 		container.setVerticalGroup(
 		    container.createParallelGroup(GroupLayout.Alignment.LEADING)
 		    .addGroup(container.createSequentialGroup()
-		    	.addGap(15)
+		    	.addGap(24)
 		        .addGroup(container.createParallelGroup(GroupLayout.Alignment.TRAILING)
 		        	.addComponent(pic, 30, 30, 30)
 		            .addComponent(name, 30, 30, 30)
@@ -72,13 +79,19 @@ public class PlayerContainer extends JPanel {
                     .addGap(8)
 
                 )
+				.addGap(24)
             )
 		);
         return container;
 	}
 
     public void updateDetails(int total, int queens){
+		/**
+		 * @param Total de peças comuns
+		 * @param Número de damas ativas
+		 */
+
         totalPieces.setText("Total de pedras: " + total);
-        totalQueens.setText("Damas: " + queens);
+        totalQueens.setText("Damas ativas: " + queens);
     }
 }

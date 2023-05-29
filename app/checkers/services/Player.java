@@ -1,12 +1,13 @@
-package app.checkers.components;
+package app.checkers.services;
 
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import java.awt.Image;
 import javax.swing.JButton;
 
+import app.checkers.styles.components.PlayerContainer;
+
 import java.util.ArrayList;
-import app.checkers.styles.PlayerContainer;
 public class Player{
 
 	private String colorPiece; // Identificador da peça
@@ -47,9 +48,7 @@ public class Player{
 	public void setContainer (PlayerContainer playerContainer){
 		this.container = playerContainer;
 	}
-	public PlayerContainer getContainer (){
-		return this.container;
-	}
+
 
 	public ImageIcon getIcon(){
         // @return Ícone da peça comum

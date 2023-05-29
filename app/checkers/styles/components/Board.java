@@ -1,25 +1,37 @@
-package app.checkers.styles;
+package app.checkers.styles.components;
 
 import javax.swing.*;
+import javax.swing.GroupLayout.*;
 import java.awt.Color;
 import java.util.Arrays;
-import javax.swing.GroupLayout.*;
 
-import app.checkers.components.*;
+import app.checkers.services.*;
+import app.checkers.styles.LayoutFactory;
 
-class Board extends JPanel{
+public class Board extends JPanel{
 	private final int LENGTH = 8; // Dimensão base do tabuleiro
 	private final int SIZE = 80; // Tamanho dos componentes alinhados genericamente
 	public JButton[][] board; // tabuleiro
 	private Color special = Color.decode("#85f785");  // Cor de ênfase
 	private Color[] color = {Color.decode("#000000"), Color.decode("#FFFFFF")}; // Tema do tabuleiro
 	private Move move; // Manipulador de movimento
-	private JButton previousClick; // Clique anterior
+	private JButton previousClickedButton; // Clique anterior
 	private Player[] player;
+	private TimerContainer timer;
 	
-    public void createBoard(Player[] players){	 
-		// @param Array de jogadores	
+	public Board(Player[] players){
+		// @param Array de jogadores
 		player = players;
+	}
+
+	public void setTimer(TimerContainer timer){
+		// @param Objeto do temporizador
+		this.timer = timer;
+	}
+
+    public void createBoard(){	 
+		// @param Array de jogadores	
+		
     	this.board  = new JButton[this.LENGTH][this.LENGTH];
 		
 		for(int line = 0; line < this.LENGTH; line++){
@@ -40,100 +52,110 @@ class Board extends JPanel{
 
 		Move.setBoard(this.board); // Define tabuleiro a ser manipulado
 	}
-	public void reset(){
+	
+	public void reset(Player up, Player down){
+		/**
+		 * @param Jogador que deve ficar na parte superior do tabuleiro
+		 * @param Jogador que deve ficar na parte inferior do tabuleiro
+		 */
 		for(JButton[] lin : board){
 			Arrays.asList(lin).forEach(button -> button.setIcon(null));
 		}
-		previousClick = null;
-		this.addPieces(player[0], 5, 8);  // Adicina peças do primeiro jogador
-		this.addPieces(player[1], 0, 3); // Adiciona peças do segundo jogador
+		
+		previousClickedButton = null;
+		this.addPieces(down, 5, 8);  // Adicina peças do primeiro jogador
+		this.addPieces(up, 0, 3); // Adiciona peças do segundo jogador
 	}
-	
 	
 	private void triggerEvent(int clonedLine, int clonedColumn){
 		/**
 		* @param Linha em que o botão foi acionado
 		* @param Coluna em que o botão foi acionado
-		* @param Array de jogadores
 		*/
+		if(!timer.isCountingTime()){ // Inicia contagem no primeiro clique
+			timer.stopCounting(false);
+			timer.countTime();
+		}
+		JButton presentClickedButton = this.board[clonedLine][clonedColumn]; // Armazena botão clicado
+		Icon icon = presentClickedButton.getIcon(); // Armazena o ícone do botão
 		
-		JButton position = this.board[clonedLine][clonedColumn]; // Armazena posição do botão
-		Icon icon = this.board[clonedLine][clonedColumn].getIcon(); // Armazena o ícone do botão
-		
-		if(icon instanceof Icon && player[0].isPlayable(position)){ // Executa se houver um ícone do botão e se a peça for jogável pelo atual jogadot				
+		if(icon instanceof Icon && player[0].isPlayable(presentClickedButton)){ // Executa se houver um ícone do botão e se a peça for jogável pelo atual jogador			
 			
-			if(move instanceof Move){ // Executa em caso de segundo clique indevido
+			if(move instanceof Move){ // Executa em caso de jogada incompleta
 				this.paintButtons(move.getMoves(), this.color[0]); // Faz botões da lista voltarem ao padrão
 				move = null; // Anula jogada
-				previousClick = null; // Anula clique anterior
+				previousClickedButton = null; // Anula clique anterior
 				return; // Evita que o evento continue
 			}
 			
 			move = new Move(clonedLine, clonedColumn); // Inicia jogada no botão de origem
-			previousClick = position; // Guarda posição para operações futuras
+			previousClickedButton = presentClickedButton; // Guarda botão para operações futuras
 			
-			if(this.paintButtons(move.fetchCaptures(player[1]), this.special) == 0 && // Testa possíveis capturas
+			if(this.paintButtons(move.fetchCaptures(player[1]), this.special) == 0 && // Testa possíveis capturas														
 				this.paintButtons(move.fetchPossibleMoves(player[0].isQueen(icon) ? Direction.ALL : player[0].getDirection()), this.special) == 0){ // Testa movimentação
-				// Executa se a peça não houver como mover a peça
+				// Executa se não houver como mover a peça
 				move = null; // Anula jogada
-				previousClick = null; // Anula clique anterior
+				previousClickedButton = null; // Anula clique anterior
 			}
 			
 		}
-		else if(this.board[clonedLine][clonedColumn].getIcon() == null && (move instanceof Move && move.contains(new int[]{clonedLine, clonedColumn}))){ // Executa se um for um segundo clique válido
-			int moveCount = 0; // Inicia contagem de possíveis jogadas sequenciais
+		else if(this.board[clonedLine][clonedColumn].getIcon() == null && (move instanceof Move && move.contains(new int[]{clonedLine, clonedColumn}))){ // Executa se o jogador estiver selecionando o destino da peça
+			int moveCount = 0; // Inicia contagem de possíveis jogadas alternativas
 
 			while(true){
-				this.paintButtons(move.getMoves(), this.color[0]); // Faz botões da lista voltarem ao padrão
+				this.paintButtons(move.getMoves(), this.color[0]); // Padroniza tabuleiro
 				
 				move.moveTo(clonedLine, clonedColumn); // Move peça para a posição selecionada			
-				player[0].updateCoordinate(previousClick, position); // Informa jogador a nova posição
+				player[0].updateCoordinate(previousClickedButton, presentClickedButton); // Informa ao jogador o botão atual
 				
-				if(!move.isCapture()){ // Executa se não houver captura									
-					break;					
+				if(move.isCapture()){ // Executa se não houver captura															
+					int index = move.indexOf(new int[]{clonedLine, clonedColumn}); // Busca índice do da coordenada selecionada
+					player[1].removeCoordinate(move.getCapture(index)); // Decrementa plantel do adversário
+					move.capture(index); // Retira peça do tabuleiro
+					
+					move = new Move(clonedLine, clonedColumn); // Inicia nova jogada
+					moveCount = this.paintButtons(move.fetchCaptures(player[1]), this.special);	// Obtém número de possíveis jogadas
+
+					if(moveCount == 1){ // Executa caso a jogada de alternativa única 
+						previousClickedButton = presentClickedButton; // Guarda botão como "anterior" para o próximo movimento
+					
+						// Guarda nova posição da peça
+						clonedLine = move.getMoves()[0][0];
+						clonedColumn = move.getMoves()[0][1];
+
+						presentClickedButton = this.board[clonedLine][clonedColumn]; // Atualiza botão atual
+						continue; // Continua o loop
+					}
 				}
-				int index = move.indexOf(new int[]{clonedLine, clonedColumn});
-				player[1].removeCoordinate(move.getCapture(index)); // Decrementa plantel do adversário
-				move.capture(index); // Retira peça
-				
-				move = new Move(clonedLine, clonedColumn);
-				moveCount = this.paintButtons(move.fetchCaptures(player[1]), this.special);	// Obtém número de quadrados de possíveis jogadas
-				if(moveCount != 1){ // Executa caso a jogada não seja óbvia ou não exista
-					break;
-				}
-				
-				previousClick = position; // Guarda posição para a próxima operação
-				
-				// Guarda nova posição
-				clonedLine = move.getMoves()[0][0];
-				clonedColumn = move.getMoves()[0][1];
-				position = this.board[clonedLine][clonedColumn];
+				break;
 			}
 			
 			if(moveCount == 0){ // Executa se não houver jogada sequencial
 				move = null; // Finaliza manipulador		
-				if(player[0].isPromotable(clonedLine)){ // Executa se a éça estiver apta a tornar-se dama
+				if(player[0].isPromotable(clonedLine)){ // Executa se a peça estiver apta a tornar-se dama
 					this.board[clonedLine][clonedColumn].setIcon(player[0].getQueenIcon());
 				}
+
 				this.reverseArray(player); // Alterna jogador
-				player[0].clearPlayable(); // Limpa lista que podem capturar
-				player[0].getCordinates().forEach(piece -> { // Analisa todas as peças em busca de capturas
-					String[] coordinate = piece.getName().split("-");
+
+				player[0].clearPlayable(); // Limpa lista de peças que devem realizar capturas
+				player[0].getCordinates().forEach(piece -> { // Analisa todas as peças em busca de jogadas
+					// Obtém coordenada do botão
+					String[] coordinate = piece.getName().split("-"); 
 					int auxLine = Integer.parseInt(coordinate[0]);
 					int auxColumn = Integer.parseInt(coordinate[1]);
 					
-					Move nMove = new Move(auxLine, auxColumn);
-					if(nMove.fetchCaptures(player[1]).length != 0){
+					Move nMove = new Move(auxLine, auxColumn); // Inicia jogada temporária
+					if(nMove.fetchCaptures(player[1]).length != 0){ // Busca capturas
 						player[0].appendPlayble(piece); // Insere peça lista
 					}
-					else if(nMove.fetchPossibleMoves(player[0].isQueen(board[auxLine][auxColumn].getIcon()) ? Direction.ALL : player[0].getDirection()).length == 0){
+					else if(nMove.fetchPossibleMoves(player[0].isQueen(board[auxLine][auxColumn].getIcon()) ? Direction.ALL : player[0].getDirection()).length == 0){ // Busca peças sem movimentação viável
 						player[0].appendBlocked(piece); // Insere peça lista
 					}
 				});
 				
-				if(player[0].isLoser()){
-					this.disable(true);
-					app.checkers.Core.stop(player[1].getUpperColor() + "S  VENCEM!");					
+				if(player[0].isLoser()){ // Executa se o jogador da vez perdeu
+					app.checkers.Core.stop(player[1].getUpperColor() + "S  VENCEM!"); // Informa vitória
 				}
 				else{
 					player[0].clearBlocked();
@@ -143,12 +165,13 @@ class Board extends JPanel{
 	}
 	
 	public void disable(boolean turn){
+		// @param Booleano de se o tabuleiro deve ser desativado
 		for(JButton[] lin : board){
 			Arrays.asList(lin).forEach(button -> {button.setEnabled(!turn);});
 		}
 	}
 
-	private int paintButtons(int[][] positions, Color color){
+	private int paintButtons(int[][] presentClickedButtons, Color color){
 		/**
 		 * @param Array com as posições dos botões a serem pintados
 		 * @param Cor que será utilizado no background
@@ -156,7 +179,7 @@ class Board extends JPanel{
 		 */
 		 
 		 int count = 0;
-		for(int[] coord : positions){		
+		for(int[] coord : presentClickedButtons){		
 			if(!(this.board[coord[0]][coord[1]].getIcon() instanceof ImageIcon)){ // Evita posições ocupadas
 				this.board[coord[0]][coord[1]].setBackground(color); // Altera cor do background
 				count++;
@@ -189,6 +212,7 @@ class Board extends JPanel{
 			}
 		}
 	}
+	
 	private Group alignComponents(Group group, JComponent[] componentList){	
   		/**
   		* @param Objeto do grupo em que os componentes devem ser alinhados
@@ -202,9 +226,6 @@ class Board extends JPanel{
     }
 	
 	public void alignGroups(){
-    	/**
-    	* @param layout do JPanel principal
-    	*/
     	GroupLayout layout = new GroupLayout(this);
     	ParallelGroup verticalAlign = layout.createParallelGroup(GroupLayout.Alignment.LEADING); // Adiciona grupo paralelo
     	SequentialGroup horizontalAlign =	layout.createSequentialGroup();  // Adiciona grupo sequencial

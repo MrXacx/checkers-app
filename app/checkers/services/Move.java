@@ -1,4 +1,4 @@
-package app.checkers.components;
+package app.checkers.services;
 
 import java.util.ArrayList;
 import java.util.List;

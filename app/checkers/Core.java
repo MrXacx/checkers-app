@@ -9,18 +9,19 @@ import java.util.Collections;
 
 import javax.swing.GroupLayout;
 
-import app.checkers.components.Player;
+import app.checkers.services.Player;
 import app.checkers.styles.LayoutFactory;
 
 public class Core extends JFrame{
 
 	private Player[] players = new Player[2];
 	private static ArrayList<String> colors = new ArrayList<>();
+	private static Core core;
 	
 	public static void main(String[] args){	
 		colors.add("red");
 		colors.add("yellow");
-		new Core();
+		core = new Core();
 	}
 	public Core(){
 		super("Damas inglesas");
@@ -29,16 +30,15 @@ public class Core extends JFrame{
 		super.setLocationRelativeTo(null); // Centraliza frame
 		super.setResizable(false);//nao mexer na tela
 		this.start();
+		super.setVisible(true); // Torna frame visível
 	}
 	public void start(){
 		
-		Collections.shuffle(colors);
+		Collections.shuffle(colors); // Embaralha ordem das cores
 		players[0] =  new Player(colors.get(0), 0); // Inicia jogador das preças pretas
 		players[1] =  new Player(colors.get(1), 7); // Inicia jogador das peças brancas
-		
-		
-		super.add(this.getLayout(new LayoutFactory(players))); // Adiciona tabuleiro ao frame
-		super.setVisible(true); // Torna frame visível
+			
+		super.add(this.getLayout(new LayoutFactory(players))); // Adiciona tabuleiro ao frame	
 	}
 	
 	public JPanel getLayout(LayoutFactory layout){
@@ -56,6 +56,14 @@ public class Core extends JFrame{
 	}
 	
 	public static void stop(String message){
-		JOptionPane.showMessageDialog(null, message, "Fim de jogo", 1);
+		int selected;
+		do{
+			selected = JOptionPane.showConfirmDialog(core, message + "\n Deseja Jogar novamente?", "Fim de jogo", JOptionPane.YES_NO_OPTION);
+			if(selected == 0){
+				core = new Core();
+			}
+		}while(selected == -1);
+		
+		core.dispose();
 	}
 }
