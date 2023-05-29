@@ -126,6 +126,8 @@ public class Board extends JPanel{
 						presentClickedButton = this.board[clonedLine][clonedColumn]; // Atualiza botão atual
 						continue; // Continua o loop
 					}
+					player[0].clearPlayable(); // Limpa lista de peças que devem realizar capturas
+					player[0].appendPlayble(presentClickedButton);
 				}
 				break;
 			}

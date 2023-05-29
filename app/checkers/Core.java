@@ -25,7 +25,7 @@ public class Core extends JFrame{
 	}
 	public Core(){
 		super("Damas inglesas");
-		super.setSize(655+240, 680); // Define dimensões
+		super.setSize(655+240, 678); // Define dimensões
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Determina que encerramento do frame equivale ao encerramento do código
 		super.setLocationRelativeTo(null); // Centraliza frame
 		super.setResizable(false);//nao mexer na tela

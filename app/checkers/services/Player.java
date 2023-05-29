@@ -29,10 +29,10 @@ public class Player{
          
          this.colorPiece = colorName;
          
-        this.pieceIcon = new ImageIcon(new ImageIcon("../src/game/"+colorName+"_piece.png").getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH));
+        this.pieceIcon = new ImageIcon(new ImageIcon("./src/game/"+colorName+"_piece.png").getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH));
         this.pieceIcon.setDescription(this.colorPiece);
         
-        this.queenIcon = new ImageIcon(new ImageIcon("../src/game/"+colorName+"_queen.png").getImage().getScaledInstance(65, 65, Image.SCALE_SMOOTH));
+        this.queenIcon = new ImageIcon(new ImageIcon("./src/game/"+colorName+"_queen.png").getImage().getScaledInstance(65, 65, Image.SCALE_SMOOTH));
         this.queenIcon .setDescription(this.colorPiece+"_queen");
         
         this.promotionLine = promotionLine;

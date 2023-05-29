@@ -60,7 +60,7 @@ public class Menus extends JPanel {
 		 */
 
     	JButton button = LayoutFactory.styleButton(new JButton(), Color.decode("#FEFEFE"));
-    	button.setIcon(new ImageIcon(new ImageIcon("../src/tools/"+name+".png").getImage().getScaledInstance(-1, 45, Image.SCALE_DEFAULT)));
+    	button.setIcon(new ImageIcon(new ImageIcon("./src/tools/"+name+".png").getImage().getScaledInstance(-1, 45, Image.SCALE_DEFAULT)));
     	return button;
     }
    
@@ -130,7 +130,7 @@ public class Menus extends JPanel {
     
     private void helpActionPerformed() {
 		try { // Tenta abrir manual no leitor de PDF padrão
-			Desktop.getDesktop().open(new File("../src/docs/manual_do_jogo.pdf"));
+			Desktop.getDesktop().open(new File("./src/docs/manual_do_jogo.pdf"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
